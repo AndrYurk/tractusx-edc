@@ -203,6 +203,28 @@ subprojects {
 
             dockerTask.dependsOn(shadowJarTask)
         }
+
+        if (path.startsWith(":edc-tests")) {
+            val agent: Configuration by configurations.creating {
+                isCanBeConsumed = true
+                isCanBeResolved = true
+            }
+
+            dependencies {
+                testImplementation(libs.allure.junit5)
+                agent(libs.aspectjweaver)
+            }
+
+            tasks.withType<Test> {
+                jvmArgs = listOf("-javaagent:${agent.singleFile}")
+                useJUnitPlatform()
+                systemProperty("allure.results.directory", layout.buildDirectory.dir("allure-results").get().asFile.absolutePath)
+            }
+        }
+
+        tasks.withType<Test>().configureEach {
+            finalizedBy(rootProject.tasks.named("aggregateAllureResults"))
+        }
     }
 
     tasks.register("downloadOpenapi") {
@@ -236,6 +258,19 @@ nexusPublishing {
 
 tasks.check {
     dependsOn(tasks.named<JacocoReport>("testCodeCoverageReport"))
+}
+
+tasks.register<Copy>("aggregateAllureResults") {
+    group = "reporting"
+    description = "Aggregates Allure test results from all subprojects into a single folder"
+    doFirst {
+        project.delete(layout.buildDirectory.dir("allure-results"))
+    }
+
+    subprojects.forEach { subproject ->
+        from(subproject.layout.buildDirectory.dir("allure-results"))
+    }
+    into(layout.buildDirectory.dir("allure-results"))
 }
 
 
