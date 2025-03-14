@@ -69,7 +69,7 @@ jobs:
           if: always()
           with:
             gh_pages: gh-pages
-            allure_results: build/aggregated-allure-results
+            allure_results: build/allure-results
 
       -   name: Get Release Name
           id: get_release
