@@ -37,6 +37,7 @@ jobs:
   validation:
     name: "Check if repository is not fork AND head is release OR base is bugfix"
     runs-on: ubuntu-latest
+    if: ${{startsWith(github.ref_name, 'bugfix/') || startsWith(github.event.pull_request.head.ref, 'release/')}}
     outputs:
       RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
     steps:
