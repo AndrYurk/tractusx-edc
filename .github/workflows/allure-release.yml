@@ -22,6 +22,7 @@
 name: "allure-release"
 
 on:
+  workflow_dispatch:
   release:
     types: [published]
 
@@ -31,7 +32,7 @@ permissions:
   id-token: write
 
 jobs:
-  build_and_publish:
+  run_tests_and_generate_report:
     runs-on: ubuntu-latest
 
     steps:
@@ -52,21 +53,19 @@ jobs:
               ~/.gradle/wrapper
             key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle.kts') }}
 
-      -   name: Build project without tests
+      -   name: Run end-to-end-tests
           run: |
            ./gradlew compileJava compileTestJava
-           ./gradlew test -DincludeTags="EndToEndTest" -PverboseTest=true
+           ./gradlew test -DincludeTags="EndToEndTest"
 
       -   name: Checkout gh-pages branch
           uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 #v4.2.2
-          if: always()
           with:
             ref: gh-pages
             path: gh-pages
 
       -   name: Build Allure test report
           uses: simple-elf/allure-report-action@f841fec0e421b5d7d8e807dedfb03efb8cf30303 #v1.12
-          if: always()
           with:
             gh_pages: gh-pages
             allure_results: build/allure-results
@@ -78,11 +77,11 @@ jobs:
             script: |
               core.setOutput("release_name", context.payload.release.name);
 
-      -   name: Move Allure report to target folder
+      -   name: Prepare Report Directory
           run: |
             TARGET_FOLDER="gh-pages/reports/${{ steps.get_release.outputs.release_name }}"
             if [ -d "$TARGET_FOLDER" ]; then
-                echo "Existing report found in ${TARGET_FOLDER}. Removing it to replace with new report."
+                echo "Removing existing report at ${TARGET_DIR}"
                 rm -rf "$TARGET_FOLDER"
             fi
             mkdir -p "$TARGET_FOLDER"
@@ -90,7 +89,6 @@ jobs:
 
       -   name: Publish Allure test report to gh-pages
           uses: peaceiris/actions-gh-pages@4f9cc6602d3f66b9c108549d475ec49e8ef4d45e
-          if: always()
           with:
             github_token: ${{ secrets.GITHUB_TOKEN }}
             publish_branch: gh-pages
