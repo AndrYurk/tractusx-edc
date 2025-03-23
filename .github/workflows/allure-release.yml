@@ -41,8 +41,8 @@ on:
 
 permissions:
   contents: write
-  pages: write
-  id-token: write
+#  pages: write
+#  id-token: write
 
 jobs:
   run_tests_and_generate_report:
