@@ -110,8 +110,8 @@ jobs:
                 tag: version
               });
               
-              const reportUrl = `https://${owner}.github.io/${repoName}/reports/${{ inputs.version }}/`;
-              const newBody = release.body + "\n\n**Test Report:** [View Report](" + reportUrl + ")";
+              const reportUrl = `https://${owner}.github.io/${repo}/reports/${version}/`;
+              const newBody = `${release.body || ''}\n\n**Test Report:** [View Report](${reportUrl})`;
               
               await github.rest.repos.updateRelease({
                 owner,
