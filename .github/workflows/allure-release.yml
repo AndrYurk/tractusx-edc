@@ -116,6 +116,6 @@ jobs:
               await github.rest.repos.updateRelease({
                 owner,
                 repo,
-                release_id: releaseId,
+                release_id: release.id,
                 body: newBody
               });
