@@ -80,19 +80,6 @@ jobs:
             gh_pages: gh-pages
             allure_results: build/allure-results
 
-#      -   name: Get Release Name
-#          id: get_release
-#          uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
-#          with:
-#            script: |
-#              core.setOutput("release_name", context.payload.release.name);
-
-      - name: Output release version
-        id: release-version
-        run: |
-          VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
-          echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
-
       -   name: Prepare Report Directory
           run: |
             TARGET_FOLDER="gh-pages/reports/${{ inputs.version }}"
@@ -114,22 +101,21 @@ jobs:
           uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea #v7.0.1
           with:
             script: |
-              const releaseId = context.payload.release.id;
-              const repoParts = process.env.GITHUB_REPOSITORY.split('/');
-              const repoName = repoParts[1];
-              const owner = process.env.GITHUB_REPOSITORY_OWNER;
-              const releaseName = encodeURIComponent(context.payload.release.name);
-              const reportUrl = `https://${owner}.github.io/${repoName}/reports/${releaseName}/`;
-              const { data: release } = await github.rest.repos.getRelease({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
-                release_id: releaseId
+              const { owner, repo } = context.repo;
+              const version = "${{ inputs.version }}";
+              
+              const { data: release } = await github.rest.repos.getReleaseByTag({
+                owner,
+                repo,
+                tag: version
               });
+              
+              const reportUrl = `https://${owner}.github.io/${repoName}/reports/${{ inputs.version }}/`;
               const newBody = release.body + "\n\n**Test Report:** [View Report](" + reportUrl + ")";
               
               await github.rest.repos.updateRelease({
-                owner: context.repo.owner,
-                repo: context.repo.repo,
+                owner,
+                repo,
                 release_id: releaseId,
                 body: newBody
               });
