@@ -29,8 +29,15 @@ on:
         description: "Version of the Tractus-X EDC release"
         type: string
 
-  release:
-    types: [published]
+  workflow_call:
+    inputs:
+      version:
+        required: false
+        description: "Version of the Tractus-X EDC release"
+        type: string
+
+#  release:
+#    types: [published]
 
 permissions:
   contents: write
