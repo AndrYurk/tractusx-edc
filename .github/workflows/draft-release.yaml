@@ -90,10 +90,10 @@ jobs:
           # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
           sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
           # replace the openapi version with the upcoming one
-          sed -i "s#control-plane-api/.*/control-plane.yaml#control-plane-api/${{ inputs.version }}/control-plane.yaml#g" .tractusx
+          sed -i "s#control-plane-api/.*/control-plane.yaml#control-plane-api/version/control-plane.yaml#g" .tractusx
           sed -i "s#data-plane-api/.*/data-plane.yaml#data-plane-api/${{ inputs.version }}/data-plane.yaml#g" .tractusx
           README_FILE=docs/usage/management-api-walkthrough/README.md
-          sed -i "s#control-plane-api/.*/#control-plane-api/${{ inputs.version }}/#g" $README_FILE
+          sed -i "s#control-plane-api/.*/#control-plane-api/version/#g" $README_FILE
           sed -i "s#data-plane-api/.*/#data-plane-api/${{ inputs.version }}/#g" $README_FILE
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
