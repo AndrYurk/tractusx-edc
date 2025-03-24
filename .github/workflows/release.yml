@@ -64,14 +64,14 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           is_latest: ${{ github.ref_name == 'main' }}
 
-  # Release: Publish specs to GitHub Pages
+  # Release: Generate Allure report
   allure-release:
     name: "Generate Allure report"
     permissions:
       contents: write
     if: needs.validation.outputs.RELEASE_VERSION
     needs: [ validation ]
-    uses: ./.github/workflows/allure-release.yml
+    uses: ./.github/workflows/allure-report.yml
     secrets: inherit
     with:
       version: ${{ needs.validation.outputs.RELEASE_VERSION }}
