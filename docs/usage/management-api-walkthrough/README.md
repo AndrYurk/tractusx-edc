@@ -1,5 +1,5 @@
 # Management API Overview
-
+version=0.9.19
 ## Introduction
 
 This walkthrough attempts to be a reference for systems integrators attempting to expose APIs safely to the Catena-X
