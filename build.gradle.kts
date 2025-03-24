@@ -205,18 +205,11 @@ subprojects {
         }
 
         if (path.startsWith(":edc-tests")) {
-            val agent: Configuration by configurations.creating {
-                isCanBeConsumed = true
-                isCanBeResolved = true
-            }
-
             dependencies {
                 testImplementation(libs.allure.junit5)
-                agent(libs.aspectjweaver)
             }
 
             tasks.withType<Test> {
-                jvmArgs = listOf("-javaagent:${agent.singleFile}")
                 useJUnitPlatform()
                 systemProperty("allure.results.directory", layout.buildDirectory.dir("allure-results").get().asFile.absolutePath)
             }
