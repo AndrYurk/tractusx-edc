@@ -95,7 +95,7 @@ jobs:
           sed -i  "s#control-plane-api/.*/control-plane.yaml#control-plane-api/version/control-plane.yaml#g" .tractusx
           sed -i  "s#data-plane-api/.*/data-plane.yaml#data-plane-api/${{ inputs.version }}/data-plane.yaml#g" .tractusx
           README_FILE=docs/usage/management-api-walkthrough/README.md
-          sed -i  "s#control-plane-api/#control-plane-api/version/#g" $README_FILE
+          sed -i  "s/control-plane-api/control-plane-apiversion/g" $README_FILE
           sed -i  "s#data-plane-api/.*/#data-plane-api/${{ inputs.version }}/#g" $README_FILE
         env:
           GITHUB_PACKAGE_USERNAME: ${{ github.actor }}
