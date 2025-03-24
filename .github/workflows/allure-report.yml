@@ -36,13 +36,8 @@ on:
         description: "Version of the Tractus-X EDC release"
         type: string
 
-#  release:
-#    types: [published]
-
 permissions:
   contents: write
-#  pages: write
-#  id-token: write
 
 jobs:
   run_tests_and_generate_report:
