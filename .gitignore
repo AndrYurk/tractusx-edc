@@ -55,6 +55,8 @@ cmake-build-*/
 # IntelliJ
 out/
 
+*.jar
+
 # mpeltonen/sbt-idea plugin
 .idea_modules/
 
@@ -105,3 +107,12 @@ buildNumber.properties
 .mvn/timing.properties
 # https://github.com/takari/maven-wrapper#usage-without-binary-jar
 .mvn/wrapper/maven-wrapper.jar
+
+### Helm
+**/*.lock
+**/*.tgz
+
+# VS Code 
+bin/
+
+edc-tests/miw-tests/src/test/resources/docker-environment/postgres_data/

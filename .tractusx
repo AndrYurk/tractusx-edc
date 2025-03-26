@@ -1,0 +1,6 @@
+product: "Tractus-X EDC"
+leadingRepository: "https://github.com/eclipse-tractusx/tractusx-edc"
+repositories: []
+openApiSpecs:
+- "https://eclipse-tractusx.github.io/tractusx-edc/openapi/control-plane-api/control-plane.yaml"
+- "https://eclipse-tractusx.github.io/tractusx-edc/openapi/data-plane-api/data-plane.yaml"
