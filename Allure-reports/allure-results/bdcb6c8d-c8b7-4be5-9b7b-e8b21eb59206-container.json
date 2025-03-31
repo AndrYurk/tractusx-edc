@@ -1,0 +1,1 @@
+{"uuid":"bdcb6c8d-c8b7-4be5-9b7b-e8b21eb59206","name":"Malicious actor should not impersonate a consumer by creating a VP with the consumer membership credential","children":["4fde00a0-7aad-4e44-b035-57f5f84d5533"],"befores":[],"afters":[],"start":1743452572333,"stop":1743452572618}

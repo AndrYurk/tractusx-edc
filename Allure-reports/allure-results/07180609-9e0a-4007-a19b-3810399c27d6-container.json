@@ -1,0 +1,1 @@
+{"uuid":"07180609-9e0a-4007-a19b-3810399c27d6","name":"Verify that the consumer receives only the offers he is permitted to (using the legacy BPN validation)","children":["8977ae15-7cab-45de-8632-0b32118a3904"],"befores":[],"afters":[],"start":1743452592007,"stop":1743452592208}
