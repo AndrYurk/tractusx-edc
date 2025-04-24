@@ -160,9 +160,14 @@ jobs:
             echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
           fi
 
+
+      - name: Get branch name
+        id: branch-name
+        uses: tj-actions/branch-names@v8
+
       - name: Generate and publish Allure report
         uses: ./.github/actions/generate-and-publish-allure-report
         with:
-          version: ${{ steps.branch-name.outputs.current_branch }}
+          version: ${{ steps.release-version.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
           allure_results: allure-results
