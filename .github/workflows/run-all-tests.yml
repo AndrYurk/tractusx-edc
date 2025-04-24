@@ -40,12 +40,8 @@ on:
 
 concurrency:
   # cancel older running jobs on the same branch
-  group: ${{
-    if( startsWith(github.head_ref, 'release/'), 
-      github.sha,
-      format('{0}-{1}', github.workflow, github.ref))
-    }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ !startsWith(github.head_ref, 'release/')}}
   #concurrency:
     #group: ${{ contains(github.head_ref, 'release') || contains(github.ref, 'release')
     # ? github.sha
