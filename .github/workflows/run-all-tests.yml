@@ -28,20 +28,18 @@ on:
     branches:
       - main
       - bugfix/*
-      - release/*
   pull_request:
     paths-ignore:
       - docs/**
   workflow_dispatch:
-  workflow_call:
 
   schedule:
     - cron: 0 3 * * 1 # run on 03:00 UTC every Monday
 
 concurrency:
-  # cancel older running jobs on the same branch
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ !startsWith(github.event.head_commit.message, 'Release')}}
+  # cancel older running jobs on the same branch except release commit
+  group: ${{ (startsWith(github.event.head_commit.message, 'Prepare release') && 'release-run') || format('{0}-{1}', github.workflow, github.ref) }}
+  cancel-in-progress: true
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
@@ -49,21 +47,21 @@ jobs:
     uses: ./.github/workflows/verify.yaml
     secrets: inherit
 
-#  deployment-test:
-#    uses: ./.github/workflows/deployment-test.yaml
-#    secrets: inherit
-#
-#  upgradeability-test:
-#    uses: ./.github/workflows/upgradeability-test.yaml
-#    secrets: inherit
+  deployment-test:
+    uses: ./.github/workflows/deployment-test.yaml
+    secrets: inherit
+
+  upgradeability-test:
+    uses: ./.github/workflows/upgradeability-test.yaml
+    secrets: inherit
 
   # this job really serves no other purpose than waiting for the other two test workflows
   # in future iterations, this could be used as a choke point to collect test data, etc.
   summary:
     needs:
       - verify
-#      - deployment-test
-#      - upgradeability-test
+      - deployment-test
+      - upgradeability-test
     runs-on: ubuntu-latest
     steps:
       - name: 'Master test job'

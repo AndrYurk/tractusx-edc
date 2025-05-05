@@ -1,5 +1,5 @@
 #################################################################################
-#  Copyright (c) 2025 Cofinity-x GMBH
+#  Copyright (c) 2025 Cofinity-X GmbH
 #
 #  See the NOTICE file(s) distributed with this work for additional
 #  information regarding copyright ownership.
@@ -23,7 +23,7 @@ description: "Generate and publish Allure report"
 inputs:
   version:
     required: true
-    description: "Version of the Tractus-X EDC release"
+    description: "Branch of the Tractus-X EDC"
   token:
     required: true
     description: "Github token"

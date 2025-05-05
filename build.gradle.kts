@@ -27,9 +27,9 @@ plugins {
     `maven-publish`
     `jacoco-report-aggregation`
     `java-test-fixtures`
-    id("com.github.johnrengelman.shadow") version "8.1.1"
-    id("com.bmuschko.docker-remote-api") version "9.4.0"
-    id("io.github.gradle-nexus.publish-plugin") version "2.0.0"
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.docker)
+    alias(libs.plugins.nexus)
 }
 
 val txScmConnection: String by project
@@ -57,15 +57,9 @@ project.subprojects.forEach {
 allprojects {
     apply(plugin = "org.eclipse.edc.edc-build")
 
-    repositories {
-        mavenCentral()
-    }
     dependencies {
 
-        implementation("org.slf4j:slf4j-api:2.0.16")
-        // this is used to counter version conflicts between the JUnit version pulled in by the plugin,
-        // and the one expected by IntelliJ
-        testImplementation(platform("org.junit:junit-bom:5.11.4"))
+        implementation("org.slf4j:slf4j-api:2.0.17")
 
         constraints {
             plugins.apply("org.gradle.java-test-fixtures")
@@ -75,10 +69,10 @@ allprojects {
             implementation("net.minidev:json-smart:2.5.2") {
                 because("version 2.4.8 has vulnerabilities: https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2023-1370.")
             }
-            implementation("com.azure:azure-core-http-netty:1.15.10") {
+            implementation("com.azure:azure-core-http-netty:1.15.11") {
                 because("Depends on netty-handler:4.1.115.Final that has a vulnerability: https://ossindex.sonatype.org/component/pkg:maven/io.netty/netty-handler@4.1.115.Final")
             }
-            implementation("software.amazon.awssdk:netty-nio-client:2.30.36") {
+            implementation("software.amazon.awssdk:netty-nio-client:2.31.21") {
                 because("Depends on netty-handler:4.1.115.Final that has a vulnerability: https://ossindex.sonatype.org/component/pkg:maven/io.netty/netty-handler@4.1.115.Final")
             }
             testImplementation("com.networknt:json-schema-validator:1.5.6") {
@@ -90,14 +84,9 @@ allprojects {
         }
     }
 
-    // configure which version of the annotation processor to use. defaults to the same version as the plugin
     configure<org.eclipse.edc.plugins.autodoc.AutodocExtension> {
         processorVersion.set(edcVersion)
         outputDirectory.set(project.layout.buildDirectory.asFile.get())
-        // uncomment the following lines to enable the Autodoc-2-Markdown converter
-        // only available with EDC 0.2.1 SNAPSHOT
-        // additionalInputDirectory.set(downloadDir.asFile)
-        // downloadDirectory.set(downloadDir.asFile)
     }
 
     configure<org.eclipse.edc.plugins.edcbuild.extensions.BuildExtension> {
@@ -138,27 +127,12 @@ allprojects {
         this.isShowViolations = System.getProperty("checkstyle.verbose", "true").toBoolean()
     }
 
-    // publishing to OSSRH is handled by the build plugin, but publishing to GH packages
-    // must be configured separately
-    publishing {
-        repositories {
-            maven {
-                name = "GitHubPackages"
-                url = uri("https://maven.pkg.github.com/${System.getenv("REPO")}")
-                credentials {
-                    username = System.getenv("GITHUB_PACKAGE_USERNAME")
-                    password = System.getenv("GITHUB_PACKAGE_PASSWORD")
-                }
-            }
-        }
-    }
-
 }
 
 subprojects {
     afterEvaluate {
         // the "dockerize" task is added to all projects that use the `shadowJar` plugin
-        if (project.plugins.hasPlugin("com.github.johnrengelman.shadow")) {
+        if (project.plugins.hasPlugin(libs.plugins.shadow.get().pluginId)) {
             val downloadOpentelemetryAgent = tasks.create("downloadOpentelemetryAgent", Copy::class) {
                 val openTelemetry = configurations.create("open-telemetry")
 
@@ -191,7 +165,7 @@ subprojects {
                 .dependsOn(downloadOpentelemetryAgent)
 
             //actually apply the plugin to the (sub-)project
-            apply(plugin = "com.bmuschko.docker-remote-api")
+            apply(plugin = libs.plugins.docker.get().pluginId)
 
             val dockerTask: DockerBuildImage = tasks.create("dockerize", DockerBuildImage::class) {
                 dockerFile.set(File("build/resources/docker/Dockerfile"))
@@ -274,6 +248,7 @@ tasks.register<Copy>("aggregateAllureResults") {
     }
     into(layout.buildDirectory.dir("allure-results"))
 }
+
 
 fun childrenDependencies(dependency: ResolvedDependency): List<ResolvedDependency> {
     return listOf(dependency) + dependency.children.map { child -> childrenDependencies(child) }.flatten()

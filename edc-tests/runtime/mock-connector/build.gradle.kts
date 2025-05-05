@@ -22,7 +22,7 @@ import com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar
 plugins {
     `java-library`
     id("application")
-    id("com.github.johnrengelman.shadow") version "8.1.1"
+    alias(libs.plugins.shadow)
     id(libs.plugins.swagger.get().pluginId)
 }
 
@@ -34,6 +34,7 @@ dependencies {
     implementation(libs.edc.lib.util)
 
     // runtime dependencies
+    runtimeOnly(libs.edc.core.runtime)
     runtimeOnly(libs.edc.core.connector)
     runtimeOnly(libs.edc.boot)
     runtimeOnly(libs.edc.api.management) {
