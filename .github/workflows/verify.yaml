@@ -127,7 +127,7 @@ jobs:
       - name: Run E2E tests (${{ matrix.variant.dir }})
         run: |
           ./gradlew compileJava compileTestJava
-          ./gradlew -p ${{ matrix.variant.dir }} test -DincludeTags="EndToEndTest" -PverboseTest=true
+          ./gradlew -p ${{ matrix.variant.dir }} test -rerun-tasks -DincludeTags="EndToEndTest" -PverboseTest=true
 
       - name: Set sanitized artifact name
         run: |
