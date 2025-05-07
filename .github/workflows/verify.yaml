@@ -111,14 +111,14 @@ jobs:
       fail-fast: false
       matrix:
         variant: [
-          { dir: edc-tests/e2e/edc-controlplane/catalog-tests },
-          { dir: edc-tests/e2e/edc-controlplane/edr-api-tests },
-          { dir: edc-tests/e2e/edc-controlplane/iatp-tests },
-          { dir: edc-tests/e2e/edc-controlplane/policy-tests },
-          { dir: edc-tests/e2e/edc-controlplane/transfer-tests },
-          { dir: edc-tests/e2e/edc-controlplane/agreement-retirement-tests },
-          { dir: edc-tests/e2e/edc-dataplane/edc-dataplane-tokenrefresh-tests },
-          { dir: edc-tests/e2e/edc-dataplane/cloud-transfer-tests },
+          { dir: edc-tests/e2e/catalog-tests },
+          { dir: edc-tests/e2e/edr-api-tests },
+          { dir: edc-tests/e2e/iatp-tests },
+          { dir: edc-tests/e2e/policy-tests },
+          { dir: edc-tests/e2e/transfer-tests },
+          { dir: edc-tests/e2e/agreement-retirement-tests },
+          { dir: edc-tests/e2e/edc-dataplane-tokenrefresh-tests },
+          { dir: edc-tests/e2e/cloud-transfer-tests },
         ]
     steps:
       - uses: actions/checkout@v4
