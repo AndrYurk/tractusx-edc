@@ -187,7 +187,7 @@ subprojects {
             dockerTask.dependsOn(shadowJarTask)
         }
 
-        if (path.startsWith(":e2e")) {
+        if (path.startsWith(":edc-tests")) {
             dependencies {
                 testImplementation(libs.allure.junit5)
             }
