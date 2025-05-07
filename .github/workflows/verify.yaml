@@ -130,13 +130,13 @@ jobs:
       - name: Run E2E tests (${{ matrix.dir }})
         run: |
           ./gradlew compileJava compileTestJava
-          ./gradlew -p edc-tests/e2e/${{ matrix.dir }} test -rerun-tasks -DincludeTags="EndToEndTest" -PverboseTest=true
+          ./gradlew -p edc-tests/e2e/${{ matrix.dir }} test -DincludeTags="EndToEndTest" -PverboseTest=true
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
 
       - name: Set sanitized artifact name
         run: |
-          SANITIZED_NAME=$(echo "${{ matrix.variant.dir }}" | tr '/' '-')
+          SANITIZED_NAME=$(echo "${{ matrix.dir }}" | tr '/' '-')
           echo "ARTIFACT_NAME=${SANITIZED_NAME}" >> $GITHUB_ENV
 
       - name: Upload test artifacts
