@@ -143,7 +143,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-${{ env.ARTIFACT_NAME }}
-          path: ${{ matrix.variant.dir }}/build/allure-results
+          path: ${{ matrix.dir }}/build/allure-results
 
   postgres-tests:
     runs-on: ubuntu-latest
