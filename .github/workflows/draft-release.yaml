@@ -26,6 +26,10 @@ run-name: "Draft Release ${{ inputs.version }} from ${{ github.ref_name }}"
 on:
   workflow_dispatch:
     inputs:
+      sha:
+        description: "Optional commit SHA to create the release from"
+        required: false
+        default: ""  # Empty by default, meaning no specific SHA unless provided
       version:
         description: 'The version you want to release. Ref should be either main for latest releases or a tag for bugfixes.'
         required: true
@@ -73,6 +77,8 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
+          # If a SHA is provided, use that; if not, use tag ref if this was triggered by a tag, otherwise use main
+          ref: ${{ inputs.sha != '' && inputs.sha || (startsWith(github.ref, 'refs/tags/') && github.ref) || 'main' }}
           fetch-depth: 0
       - name: Create Release or Bugfix branch
         run: git checkout -b ${{ needs.validate-and-prepare.outputs.branch_name }}
@@ -108,28 +114,20 @@ jobs:
           git add .
           git commit -m "Prepare release ${{ inputs.version }}"
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-      - name: Push release/bugfix branch
-        run: git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
-      - name: Create pull request to main
-        if: ${{ github.ref_name == 'main' }}
-        uses: thomaseizinger/create-pull-request@1.4.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        with:
-          head: ${{ needs.validate-and-prepare.outputs.branch_name }}
-          base: main
-          title: Release version ${{ inputs.version }}
-          reviewers: ${{ github.actor }}
-          body: |
-            This PR was created in response to a manual trigger of the [draft release workflow](https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}).
-            Versions have been bumped in [commit ${{ steps.make-commit.outputs.commit }}](${{ steps.make-commit.outputs.commit }}).
-
-      - name: Commit version bump to main
+      - name: Push changes to main
         if: ${{ github.ref_name == 'main' }}
         run: |
-          git checkout main
-          git pull origin main
-          git merge --no-commit ${{ needs.validate-and-prepare.outputs.branch_name }}
-          git commit -m "Bump version to ${{ inputs.version }} on main"
+          # Pushing the version bump commit directly to main
           git push origin main
+      - name: Push release/bugfix branch
+        run: git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
+      - name: Create pull request for release branch
+        uses: peter-evans/create-pull-request@v4
+        with:
+          source_branch: "$BRANCH_NAME"    # the new release/bugfix branch
+          target_branch: main             # merge back into main (source branch for the release)
+          title: "Release Draft – ${BRANCH_NAME}"
+          body: "This PR merges the release branch back into the source branch."
+          branch: "$BRANCH_NAME"
+          delete_branch: false           # keep the branch until release is finalized (optional)
 
