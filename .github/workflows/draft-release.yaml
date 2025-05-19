@@ -26,13 +26,13 @@ run-name: "Draft Release ${{ inputs.version }} from ${{ github.ref_name }}"
 on:
   workflow_dispatch:
     inputs:
+      version:
+        description: 'The version you want to release. Ref should be either main for latest releases or a tag for bugfixes.'
+        required: true
       sha:
         description: "Optional commit SHA to create the release from"
         required: false
         default: ""  # Empty by default, meaning no specific SHA unless provided
-      version:
-        description: 'The version you want to release. Ref should be either main for latest releases or a tag for bugfixes.'
-        required: true
 
 jobs:
   validate-and-prepare:
