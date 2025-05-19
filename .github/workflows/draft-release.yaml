@@ -118,16 +118,19 @@ jobs:
         if: ${{ github.ref_name == 'main' }}
         run: |
           # Pushing the version bump commit directly to main
+          git checkout main
+          git pull origin main
+          git merge ${{ needs.validate-and-prepare.outputs.branch_name }}
           git push origin main
       - name: Push release/bugfix branch
         run: git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
       - name: Create pull request for release branch
         uses: peter-evans/create-pull-request@v4
         with:
-          source_branch: "$BRANCH_NAME"    # the new release/bugfix branch
+          source_branch: ${{ needs.validate-and-prepare.outputs.branch_name }}    # the new release/bugfix branch
           target_branch: main             # merge back into main (source branch for the release)
-          title: "Release Draft – ${BRANCH_NAME}"
+          title: "Release Draft – ${{ needs.validate-and-prepare.outputs.branch_name }}"
           body: "This PR merges the release branch back into the source branch."
-          branch: "$BRANCH_NAME"
+          branch: ${{ needs.validate-and-prepare.outputs.branch_name }}
           delete_branch: false           # keep the branch until release is finalized (optional)
 
