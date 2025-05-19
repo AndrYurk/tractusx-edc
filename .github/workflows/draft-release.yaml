@@ -125,10 +125,11 @@ jobs:
       - name: Push release/bugfix branch
         run: git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
       - name: Create pull request for release branch
+        if: ${{ github.ref_type != 'tag' }}
         uses: peter-evans/create-pull-request@v4
         with:
           source_branch: ${{ needs.validate-and-prepare.outputs.branch_name }}    # the new release/bugfix branch
-          target_branch: main             # merge back into main (source branch for the release)
+          target_branch: ${{ needs.validate-and-prepare.outputs.branch_name }}    # merge back into main (source branch for the release)
           title: "Release Draft – ${{ needs.validate-and-prepare.outputs.branch_name }}"
           body: "This PR merges the release branch back into the source branch."
           branch: ${{ needs.validate-and-prepare.outputs.branch_name }}
