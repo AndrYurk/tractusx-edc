@@ -114,9 +114,9 @@ jobs:
         run: git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
 
   update-main:
-    name: "Draft a new release"
+    name: "Update main"
     runs-on: ubuntu-latest
-    needs: validate-and-prepare
+    needs: [ validate-and-prepare, draft-new-release]
     permissions:
       contents: write
       packages: write
