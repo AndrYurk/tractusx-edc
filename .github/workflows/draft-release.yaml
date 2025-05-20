@@ -85,28 +85,17 @@ jobs:
         with:
           run: strict
       - name: Upload DEPENDENCIES file artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v2
         with:
           name: dependencies
           path: DEPENDENCIES
       - name: Replace published DEPENDENCIES link in NOTICE
         run: |
           sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
-      - name: Bump version in gradle.properties
-        run: |
-          sed -i 's/version=.*/version=${{ inputs.version }}/g' gradle.properties
-      - name: Bump version in /charts
-        uses: mikefarah/yq@v4.45.2
+      - name: Version and Chart Updates
+        uses: ./.github/actions/update-version-and-charts
         with:
-          cmd: |
-            find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ inputs.version }}" | .version = "${{ inputs.version }}"'
-      - name: Update Chart READMEs
-        uses: addnab/docker-run-action@v3
-        with:
-          image: jnorwood/helm-docs:v1.10.0
-          options: -v ${{ github.workspace }}/charts:/helm-docs
-          run: |
-            helm-docs --log-level debug
+          version: ${{ inputs.version }}
       - name: Commit changes on release branch
         run: |
           git add .
@@ -123,7 +112,7 @@ jobs:
       contents: write
     steps:
       - name: Download DEPENDENCIES artifact
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v2
         with:
           name: dependencies
           path: .
@@ -138,18 +127,11 @@ jobs:
       - name: Replace published DEPENDENCIES link in NOTICE
         run: |
           sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
-      - name: Bump version in /charts
-        uses: mikefarah/yq@v4.45.2
+      - name: Version and Chart Updates on Main
+        uses: ./.github/actions/update-version-and-charts
         with:
-          cmd: |
-            find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ inputs.version }}" | .version = "${{ inputs.version }}"'
-      - name: Update Chart READMEs
-        uses: addnab/docker-run-action@v3
-        with:
-          image: jnorwood/helm-docs:v1.10.0
-          options: -v ${{ github.workspace }}/charts:/helm-docs
-          run: |
-            helm-docs --log-level debug
+          version: ${{ inputs.version }}
+          bump-snapshot: true
       - name: Compute next snapshot version
         id: compute_snapshot
         run: |
@@ -159,7 +141,7 @@ jobs:
             NEXT_PATCH=$((PAT + 1))
             echo "new_version=$MAJ.$MIN.$NEXT_PATCH-SNAPSHOT" >> $GITHUB_OUTPUT
           fi
-      - name: Bump version in gradle.properties
+      - name: Bump version in gradle.properties on Main
         if: steps.compute_snapshot.outputs.new_version != ''
         run: |
           sed -i "s/version=.*/version=${{ steps.compute_snapshot.outputs.new_version }}/" gradle.properties
