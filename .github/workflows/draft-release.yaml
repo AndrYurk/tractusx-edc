@@ -140,7 +140,7 @@ jobs:
           run: |
             helm-docs --log-level debug
       - name: Commit manifest files
-        id: make-commit
+        id: make-commit-main
         run: |
           git add .
           git commit -m "Prepare release ${{ inputs.version }}"
