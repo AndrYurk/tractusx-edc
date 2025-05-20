@@ -27,15 +27,15 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'The version you want to release. Ref should be either main for latest releases or a tag for bugfixes.'
+        description: 'The version to release'
         required: true
       sha:
-        description: "Optional commit SHA to create the release from"
+        description: 'Optional commit SHA to base the new branch on'
         required: false
 
 jobs:
   validate-and-prepare:
-    name: "Validate that tag does not already exist and prepare branch"
+    name: "Validate tag and determine branch"
     runs-on: ubuntu-latest
     if: ${{ github.ref_name == 'main' || startsWith(github.ref, 'refs/tags/') || inputs.sha }}
     outputs:
@@ -47,13 +47,11 @@ jobs:
       - id: check-tag
         name: "Check if tag exists"
         run: |
-          tag=$(git tag -l ${{ inputs.version }})
-          if [ ! -z "$tag" ]; then
-            echo "Tag already exists! Please choose another tag."
-            exit 1
+          if git rev-parse "refs/tags/${{ inputs.version }}" >/dev/null 2>&1; then
+            echo "Tag already exists!" && exit 1
           fi
       - id: resolve_branch
-        name: "Resolve branch prefix (release or bugfix)"
+        name: "Determine branch name"
         run: |
           if [[ -n "${{ inputs.sha }}" ]]; then
             echo "branch_name=release/${{ inputs.version }}" >> "$GITHUB_OUTPUT"
@@ -64,7 +62,7 @@ jobs:
           fi
 
   draft-new-release:
-    name: "Draft a new release"
+    name: "Draft Release"
     runs-on: ubuntu-latest
     needs: validate-and-prepare
     permissions:
@@ -77,7 +75,7 @@ jobs:
           ref: ${{ inputs.sha != '' && inputs.sha || github.ref_name }}
       - name: Create release/bugfix branch
         run: git checkout -b ${{ needs.validate-and-prepare.outputs.branch_name }}
-      - name: Initialize mandatory git config
+      - name: Initialize git config
         run: |
           git config user.name "eclipse-tractusx-bot"
           git config user.email "tractusx-bot@eclipse.org"
@@ -94,10 +92,21 @@ jobs:
       - name: Replace published DEPENDENCIES link in NOTICE
         run: |
           sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
-      - name: Version and Chart Updates
-        uses: ./.github/actions/update-version-and-charts
+      - name: Bump version in gradle.properties
+        run: |
+          sed -i 's/version=.*/version=${{ inputs.version }}/g' gradle.properties
+      - name: Bump version in /charts
+        uses: mikefarah/yq@v4.45.2
         with:
-          version: ${{ inputs.version }}
+          cmd: |
+            find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ inputs.version }}" | .version = "${{ inputs.version }}"'
+      - name: Update Chart READMEs
+        uses: addnab/docker-run-action@v3
+        with:
+          image: jnorwood/helm-docs:v1.10.0
+          options: -v ${{ github.workspace }}/charts:/helm-docs
+          run: |
+            helm-docs --log-level debug
       - name: Commit changes on release branch
         run: |
           git add .
@@ -129,11 +138,18 @@ jobs:
       - name: Replace published DEPENDENCIES link in NOTICE
         run: |
           sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
-      - name: Version and Chart Updates on Main
-        uses: ./.github/actions/update-version-and-charts
+      - name: Bump version in /charts
+        uses: mikefarah/yq@v4.45.2
         with:
-          version: ${{ inputs.version }}
-          bump-snapshot: true
+          cmd: |
+            find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ inputs.version }}" | .version = "${{ inputs.version }}"'
+      - name: Update Chart READMEs
+        uses: addnab/docker-run-action@v3
+        with:
+          image: jnorwood/helm-docs:v1.10.0
+          options: -v ${{ github.workspace }}/charts:/helm-docs
+          run: |
+            helm-docs --log-level debug
       - name: Compute next snapshot version
         id: compute_snapshot
         run: |
@@ -143,7 +159,7 @@ jobs:
             NEXT_PATCH=$((PAT + 1))
             echo "new_version=$MAJ.$MIN.$NEXT_PATCH-SNAPSHOT" >> $GITHUB_OUTPUT
           fi
-      - name: Bump version in gradle.properties on Main
+      - name: Bump version in gradle.properties
         if: steps.compute_snapshot.outputs.new_version != ''
         run: |
           sed -i "s/version=.*/version=${{ steps.compute_snapshot.outputs.new_version }}/" gradle.properties
