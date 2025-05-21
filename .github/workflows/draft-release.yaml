@@ -67,9 +67,15 @@ jobs:
     needs: validate-and-prepare
     permissions:
       contents: write
+      packages: write
+      pages: write
     steps:
       - name: Checkout base
         uses: actions/checkout@v4
+      - name: Initialize mandatory git config
+        run: |
+          git config user.name "eclipse-tractusx-bot"
+          git config user.email "tractusx-bot@eclipse.org"
       - uses: ./.github/actions/setup-java
       - name: Check dependencies before release
         uses: ./.github/actions/generate-and-check-dependencies
