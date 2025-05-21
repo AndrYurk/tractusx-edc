@@ -131,7 +131,6 @@ jobs:
         uses: ./.github/actions/update-version-and-charts
         with:
           version: ${{ inputs.version }}
-          bump-snapshot: true
       - name: Compute next snapshot version
         id: compute_snapshot
         run: |
