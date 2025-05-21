@@ -147,7 +147,7 @@ jobs:
           release_branch: "false"
       - name: Commit and push main updates
         run: |
-          git add DEPENDENCIES NOTICE.md gradle.properties charts/*/Chart.yaml charts/*/README.md
+          git add .
           git config user.name "eclipse-tractusx-bot"
           git config user.email "tractusx-bot@eclipse.org"
           git commit -m "Prepare release ${{ inputs.version }}"
