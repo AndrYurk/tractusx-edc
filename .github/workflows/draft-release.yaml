@@ -127,16 +127,16 @@ jobs:
     permissions:
       contents: write
     steps:
-      - name: Download DEPENDENCIES artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dependencies
-          path: .
       - name: Checkout main
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: main
+      - name: Download DEPENDENCIES artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dependencies
+          path: .
       - name: Replace published DEPENDENCIES link in NOTICE
         run: |
           sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
