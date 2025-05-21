@@ -108,7 +108,7 @@ jobs:
         uses: ./.github/actions/update-version-and-charts
         with:
           version: ${{ inputs.version }}
-          release-branch: "true"
+          release_branch: "true"
       - name: Commit changes on release branch
         run: |
           git add DEPENDENCIES NOTICE.md gradle.properties charts/*/Chart.yaml charts/*/README.md
@@ -146,7 +146,7 @@ jobs:
         uses: ./.github/actions/update-version-and-charts
         with:
           version: ${{ inputs.version }}
-          release-branch: "false"
+          release_branch: "false"
       - name: Commit and push main updates
         run: |
           git add DEPENDENCIES NOTICE.md gradle.properties charts/*/Chart.yaml charts/*/README.md
