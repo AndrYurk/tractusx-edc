@@ -49,13 +49,6 @@ runs:
       if: ${{ github.ref_name == 'main'}}
       shell: bash
       run: |-
-        # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
-        sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
-
-    - name: Compute next snapshot version
-      id: compute_snapshot
-      shell: bash
-      run: |
         IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"${{ inputs.version }}"
           INC=0
           # Compute new snapshot version, do not increment snapshot on non-final releases, e.g. -rc1
