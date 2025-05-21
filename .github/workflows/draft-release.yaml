@@ -81,7 +81,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dependencies
-          path: .
+          path: DEPENDENCIES
 
   draft-new-release:
     name: "Draft Release"
@@ -101,7 +101,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dependencies
-          path: DEPENDENCIES
+          path: .
       - name: Replace published DEPENDENCIES link in NOTICE
         run: |
           sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
@@ -131,7 +131,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dependencies
-          path: DEPENDENCIES
+          path: .
       - name: Checkout main
         uses: actions/checkout@v4
         with:
