@@ -72,10 +72,6 @@ jobs:
     steps:
       - name: Checkout base
         uses: actions/checkout@v4
-#      - name: Initialize mandatory git config
-#        run: |
-#          git config user.name "eclipse-tractusx-bot"
-#          git config user.email "tractusx-bot@eclipse.org"
       - uses: ./.github/actions/setup-java
       - name: Check dependencies before release
         uses: ./.github/actions/generate-and-check-dependencies
@@ -101,6 +97,11 @@ jobs:
           ref: ${{ inputs.sha != '' && inputs.sha || github.ref_name }}
       - name: Create release/bugfix branch
         run: git checkout -b ${{ needs.validate-and-prepare.outputs.branch_name }}
+      - name: Download DEPENDENCIES artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dependencies
+          path: DEPENDENCIES
       - name: Replace published DEPENDENCIES link in NOTICE
         run: |
           sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
@@ -111,7 +112,7 @@ jobs:
           release_branch: "true"
       - name: Commit changes on release branch
         run: |
-          git add DEPENDENCIES NOTICE.md gradle.properties charts/*/Chart.yaml charts/*/README.md
+          git add .
           git config user.name "eclipse-tractusx-bot"
           git config user.email "tractusx-bot@eclipse.org"
           git commit -m "Prepare release ${{ inputs.version }}"
@@ -136,9 +137,6 @@ jobs:
         with:
           fetch-depth: 0
           ref: main
-      - name: Apply DEPENDENCIES file
-        run: |
-          mv DEPENDENCIES DEPENDENCIES
       - name: Replace published DEPENDENCIES link in NOTICE
         run: |
           sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
