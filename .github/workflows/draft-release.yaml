@@ -81,7 +81,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: dependencies
-          path: DEPENDENCIES
+          path: .
 
   draft-new-release:
     name: "Draft Release"
