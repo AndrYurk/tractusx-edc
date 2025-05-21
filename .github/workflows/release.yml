@@ -85,7 +85,7 @@ jobs:
           generateReleaseNotes: true
           tag: ${{ needs.validation.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          makeLatest: ${{ github.ref_name == 'main' }}
+          makeLatest: ${{ startsWith(github.ref_name, 'release/') }}
           removeArtifacts: true
 
   run-all-tests:
