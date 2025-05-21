@@ -1,4 +1,5 @@
 #################################################################################
+#  Copyright (c) 2025 Cofinity-X GmbH
 #  Copyright (c) 2024 Bayerische Motoren Werke Aktiengesellschaft (BMW AG)
 #  Copyright (c) 2021,2023 Contributors to the Eclipse Foundation
 #
@@ -27,7 +28,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'The version you want to release. Ref should be either main for latest releases or a tag for bugfixes.'
+        description: 'The version you want to release. Ref should be either main for latest releases or a tag for bugfixes. '
         required: true
       sha:
         description: "Optional commit SHA to create the release from"
@@ -37,7 +38,7 @@ jobs:
   validate-and-prepare:
     name: "Validate that tag does not already exist and prepare branch"
     runs-on: ubuntu-latest
-    if: ${{ github.ref_name == 'main' || startsWith(github.ref, 'refs/tags/') || inputs.sha }}
+    if: ${{ github.ref_name == 'main' || startsWith(github.ref, 'refs/tags/') }}
     outputs:
       branch_name: ${{ steps.resolve_branch.outputs.branch_name }}
     steps:
@@ -46,19 +47,28 @@ jobs:
           fetch-depth: 0
       - id: check-tag
         name: "Check if tag exists"
-        run: |
-          if git rev-parse "refs/tags/${{ inputs.version }}" >/dev/null 2>&1; then
-            echo "Tag already exists!" && exit 1
+        run: |-
+
+          tag=$(git tag -l ${{ inputs.version }})
+
+          if [ ! -z $tag ];
+          then
+            echo "Tag already exists! Please choose another tag."
+            exit 1
           fi
       - id: resolve_branch
-        name: "Determine branch name"
+        name: "Resolve branch prefix (release or bugfix)"
         run: |
-          if [[ -n "${{ inputs.sha }}" ]]; then
+          
+          if [[ ${{ github.ref_name }} == "main" ]];
+          then
             echo "branch_name=release/${{ inputs.version }}" >> "$GITHUB_OUTPUT"
-          elif [[ "${{ github.ref_name }}" == "main" ]]; then
-            echo "branch_name=release/${{ inputs.version }}" >> "$GITHUB_OUTPUT"
-          else
+          elif [[ ${{ github.ref }} == refs/tags/* ]]
+          then
             echo "branch_name=bugfix/${{ inputs.version }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "Ref branch does not match required criteria. Should either be "main" or a tag."
+            exit 1
           fi
 
   update-dependencies:
@@ -84,48 +94,54 @@ jobs:
           path: DEPENDENCIES
 
   draft-new-release:
-    name: "Draft Release"
+    name: "Draft a new release"
     runs-on: ubuntu-latest
     needs: [validate-and-prepare, update-dependencies]
     permissions:
       contents: write
+      packages: write
+      pages: write
     steps:
       - name: Checkout base
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
           ref: ${{ inputs.sha != '' && inputs.sha || github.ref_name }}
-      - name: Create release/bugfix branch
+      - name: Create Release or Bugfix branch
         run: git checkout -b ${{ needs.validate-and-prepare.outputs.branch_name }}
       - name: Download DEPENDENCIES artifact
         uses: actions/download-artifact@v4
         with:
           name: dependencies
           path: .
-      - name: Replace published DEPENDENCIES link in NOTICE
-        run: |
-          sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
+      - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
+        run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
       - name: Version and Chart Updates
         uses: ./.github/actions/update-version-and-charts
         with:
           version: ${{ inputs.version }}
           release_branch: "true"
       - name: Commit changes on release branch
+        id: make-commit
         run: |
           git add .
           git config user.name "eclipse-tractusx-bot"
           git config user.email "tractusx-bot@eclipse.org"
-          git commit -m "Prepare release ${{ inputs.version }}"
-      - name: Push release branch
-        run: git push --set-upstream origin ${{ needs.validate-and-prepare.outputs.branch_name }}
+          git commit --message "Prepare release ${{ inputs.version }}"
 
-  update-main:
+          echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+      - name: Push new branch
+        run: git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
+
+  main-branch-update:
     name: "Main Branch Update"
     runs-on: ubuntu-latest
-    needs: [validate-and-prepare, update-dependencies, draft-new-release]
+    needs: [ validate-and-prepare, update-dependencies, draft-new-release ]
     if: ${{ github.ref_name == 'main' || github.sha == inputs.sha }}
     permissions:
       contents: write
+      packages: write
+      pages: write
     steps:
       - name: Checkout main
         uses: actions/checkout@v4
