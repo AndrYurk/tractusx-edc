@@ -21,7 +21,10 @@ name: "Setup TractusX EDC in memory runtime"
 description: "Setup TractusX EDC in memory runtime"
 inputs:
   version:
-    description: 'The version you want to release. Ref should be either main for latest releases or a tag for bugfixes.'
+    description: 'The release version'
+    required: true
+  release_branch:
+    description: 'Identifier fo the release branch'
     required: true
 runs:
   using: "composite"
@@ -39,14 +42,14 @@ runs:
         run: |
           helm-docs --log-level debug
     - name: Bump version in gradle.properties for release
-      if: ${{ github.ref_name != 'main'}}
+      if: ${{ inputs.release_branch == 'true' }}
       shell: bash
       run: |-
         # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
         sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
 
     - name: Bump version in gradle.properties for main
-      if: ${{ github.ref_name == 'main'}}
+      if: ${{ inputs.release_branch == 'false' }}
       shell: bash
       run: |-
         IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"${{ inputs.version }}"
