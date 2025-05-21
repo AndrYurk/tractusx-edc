@@ -17,10 +17,12 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-
----
 name: "Setup TractusX EDC in memory runtime"
 description: "Setup TractusX EDC in memory runtime"
+inputs:
+  version:
+    description: 'The version you want to release. Ref should be either main for latest releases or a tag for bugfixes.'
+    required: true
 runs:
   using: "composite"
   steps:
