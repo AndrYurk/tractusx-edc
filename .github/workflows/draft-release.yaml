@@ -121,9 +121,9 @@ jobs:
         with:
           fetch-depth: 0
           ref: main
-      - name: Apply DEPENDENCIES file
-        run: |
-          mv DEPENDENCIES DEPENDENCIES
+#      - name: Apply DEPENDENCIES file
+#        run: |
+#          mv DEPENDENCIES DEPENDENCIES
       - name: Replace published DEPENDENCIES link in NOTICE
         run: |
           sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
