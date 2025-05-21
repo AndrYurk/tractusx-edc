@@ -62,7 +62,7 @@ jobs:
           fi
 
   update-dependencies:
-    name: "Draft Release"
+    name: "Update dependencies"
     runs-on: ubuntu-latest
     needs: validate-and-prepare
     permissions:
@@ -84,7 +84,7 @@ jobs:
   draft-new-release:
     name: "Draft Release"
     runs-on: ubuntu-latest
-    needs: validate-and-prepare
+    needs: [validate-and-prepare, update-dependencies]
     permissions:
       contents: write
     steps:
@@ -114,7 +114,7 @@ jobs:
   update-main:
     name: "Main Branch Update"
     runs-on: ubuntu-latest
-    needs: draft-new-release
+    needs: [validate-and-prepare, update-dependencies, draft-new-release]
     if: ${{ github.ref_name == 'main' || github.sha == inputs.sha }}
     permissions:
       contents: write
