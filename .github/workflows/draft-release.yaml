@@ -61,6 +61,26 @@ jobs:
             echo "branch_name=bugfix/${{ inputs.version }}" >> "$GITHUB_OUTPUT"
           fi
 
+  update-dependencies:
+    name: "Draft Release"
+    runs-on: ubuntu-latest
+    needs: validate-and-prepare
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout base
+        uses: actions/checkout@v4
+      - uses: ./.github/actions/setup-java
+      - name: Check dependencies before release
+        uses: ./.github/actions/generate-and-check-dependencies
+        with:
+          run: strict
+      - name: Upload DEPENDENCIES file artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dependencies
+          path: DEPENDENCIES
+
   draft-new-release:
     name: "Draft Release"
     runs-on: ubuntu-latest
@@ -75,20 +95,6 @@ jobs:
           ref: ${{ inputs.sha != '' && inputs.sha || github.ref_name }}
       - name: Create release/bugfix branch
         run: git checkout -b ${{ needs.validate-and-prepare.outputs.branch_name }}
-      - name: Initialize git config
-        run: |
-          git config user.name "eclipse-tractusx-bot"
-          git config user.email "tractusx-bot@eclipse.org"
-      - uses: ./.github/actions/setup-java
-      - name: Check dependencies before release
-        uses: ./.github/actions/generate-and-check-dependencies
-        with:
-          run: strict
-      - name: Upload DEPENDENCIES file artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependencies
-          path: DEPENDENCIES
       - name: Replace published DEPENDENCIES link in NOTICE
         run: |
           sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
@@ -98,13 +104,15 @@ jobs:
           version: ${{ inputs.version }}
       - name: Commit changes on release branch
         run: |
-          git add .
+          git add DEPENDENCIES NOTICE.md gradle.properties charts/*/Chart.yaml charts/*/README.md
+          git config user.name "eclipse-tractusx-bot"
+          git config user.email "tractusx-bot@eclipse.org"
           git commit -m "Prepare release ${{ inputs.version }}"
       - name: Push release branch
         run: git push --set-upstream origin ${{ needs.validate-and-prepare.outputs.branch_name }}
 
   update-main:
-    name: "Conditional Main Branch Update"
+    name: "Main Branch Update"
     runs-on: ubuntu-latest
     needs: draft-new-release
     if: ${{ github.ref_name == 'main' || github.sha == inputs.sha }}
@@ -127,58 +135,14 @@ jobs:
       - name: Replace published DEPENDENCIES link in NOTICE
         run: |
           sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
-      - name: Version and Chart Updates on Main
+      - name: Version and Chart Updates
         uses: ./.github/actions/update-version-and-charts
         with:
           version: ${{ inputs.version }}
-      - name: Compute next snapshot version
-        id: compute_snapshot
-        run: |
-          VERSION=$(grep version= gradle.properties | cut -c9-)
-          IFS=.- read -r MAJ MIN PAT SNAP <<< "$VERSION"
-          if [ -z "$SNAP" ] && [[ "$VERSION" =~ \.0$ ]]; then
-            NEXT_PATCH=$((PAT + 1))
-            echo "new_version=$MAJ.$MIN.$NEXT_PATCH-SNAPSHOT" >> $GITHUB_OUTPUT
-          fi
-      - name: Bump version in gradle.properties on Main
-        if: steps.compute_snapshot.outputs.new_version != ''
-        run: |
-          sed -i "s/version=.*/version=${{ steps.compute_snapshot.outputs.new_version }}/" gradle.properties
       - name: Commit and push main updates
         run: |
           git add DEPENDENCIES NOTICE.md gradle.properties charts/*/Chart.yaml charts/*/README.md
           git config user.name "eclipse-tractusx-bot"
           git config user.email "tractusx-bot@eclipse.org"
-          git commit -m "chore: update main after release ${{ inputs.version }}"
+          git commit -m "Prepare release ${{ inputs.version }}"
           git push origin main
-#      - uses: actions/checkout@v4
-#        with:
-#          ref: main
-#          fetch-depth: 0
-#      - name: Check dependencies before release
-#        uses: ./.github/actions/generate-and-check-dependencies
-#        with:
-#          run: strict
-#      - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
-#        run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\](DEPENDENCIES)#g" NOTICE.md
-#      - name: bump-snapshot-version
-#        if: github.ref_name == 'main'
-#        uses: ./.github/workflows/bump-version.yaml
-#      - name: Bump version in /charts
-#        uses: mikefarah/yq@v4.45.2
-#        with:
-#          cmd: |
-#            find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ inputs.version }}" | .version = "${{ inputs.version }}"'
-#      - name: Update Chart READMEs
-#        uses: addnab/docker-run-action@v3
-#        with:
-#          image: jnorwood/helm-docs:v1.10.0
-#          options: -v ${{ github.workspace }}/charts:/helm-docs
-#          run: |
-#            helm-docs --log-level debug
-#      - name: Commit manifest files
-#        id: make-commit-main
-#        run: |
-#          git add .
-#          git commit -m "Prepare release ${{ inputs.version }}"
-#          echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
