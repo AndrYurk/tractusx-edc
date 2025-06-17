@@ -152,7 +152,7 @@ jobs:
       - name: Version and Chart Updates
         uses: ./.github/actions/update-version-and-charts
         with:
-          version: ${{ inputs.version }}
+          version: ${{ needs.validation.outputs.RELEASE_VERSION }}
           release_branch: "false"
       - name: Commit and push main updates
         run: |
