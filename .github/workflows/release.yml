@@ -138,7 +138,7 @@ jobs:
     name: "Main Branch Update"
     runs-on: ubuntu-latest
     needs: [ validation, github-release ]
-    if: needs.github-release.outputs.patch == 0 && needs.validation.outputs.RELEASE_VERSION != *rc*
+    if: ${{ needs.github-release.outputs.patch == '0' && !contains(needs.validation.outputs.RELEASE_VERSION, 'rc') }}
     permissions:
       contents: write
       packages: write
