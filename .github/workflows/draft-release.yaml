@@ -63,7 +63,7 @@ jobs:
             VERSION="${MAJOR}.${MINOR}.${PATCH}-${RC_VERSION}"
             echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           
-          elif [[ ${{ github.ref_name }} == release/* && ${{ github.ref_name }} != *rc* && "inputs.release_type" == "bugfix" ]]
+          elif [[ ${{ github.ref_name }} == release/* && ${{ github.ref_name }} != *rc* && inputs.release_type == "bugfix" ]]
           then
             # Bugfix on a release branch → increment patch
             VERSION="${MAJOR}.${MINOR}.$(( PATCH + 1 ))"
