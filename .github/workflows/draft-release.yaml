@@ -53,7 +53,7 @@ jobs:
           set -x
           # Read the current version (major.minor.patch[.snapshot]) from gradle.properties
           GRADLE_VERSION=$(grep version= gradle.properties | cut -c 9-)
-          IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"GRADLE_VERSION"   
+          IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"$GRADLE_VERSION"   
           if [[ ${{ github.ref_name }} == "main" && ${{ inputs.release_type }} == "rc" ]];
           then
             # RC on main → count existing RCs for this version and bump
