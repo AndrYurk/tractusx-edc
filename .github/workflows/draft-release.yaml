@@ -105,9 +105,6 @@ jobs:
     steps:
       - name: Checkout base
         uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: ${{ github.ref_name }}
       - name: Create Release branch
         run: git checkout -b ${{ needs.validate-and-prepare.outputs.branch_name }}
       - name: Initialize mandatory git config
@@ -133,7 +130,7 @@ jobs:
           git commit --message "Prepare release ${{ needs.validate-and-prepare.outputs.version }}"
 
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-      - name: Push new branch
-        run: git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
       - name: Run all tests
         uses: ./.github/workflows/run-all-tests.yml
+      - name: Push new branch
+        run: git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
