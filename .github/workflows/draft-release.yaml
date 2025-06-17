@@ -53,28 +53,29 @@ jobs:
           set -euxo pipefail
           # Read the current version (major.minor.patch[.snapshot]) from gradle.properties
           GRADLE_VERSION=$(grep version= gradle.properties | cut -c 9-)
-          IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"$GRADLE_VERSION"   
+          IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"$GRADLE_VERSION"   
+          
           if [[ ${{ github.ref_name }} == "main" && ${{ inputs.release_type }} == "rc" ]];
           then
             # RC on main → count existing RCs for this version and bump
             COUNT=$(git branch -r \
                 | sed 's| *origin/||' \
-                | grep -E "^release/${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.0-rc" \
+                | grep -E "^release/${MAJOR}.${MINOR}.0-rc" -c \
                 | wc -l)
             RC_VERSION="rc$(( COUNT + 1 ))"
-            VERSION="${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}-${RC_VERSION}"
+            VERSION="${MAJOR}.${MINOR}.${PATCH}-${RC_VERSION}"
             echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           
           elif [[ ${{ github.ref_name }} == release/* && ${{ github.ref_name }} != *rc* && inputs.release_type == "bugfix" ]]
           then
             # Bugfix on a release branch → increment patch
-            VERSION="${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.$(( RELEASE_VERSION_PATCH + 1 ))"
+            VERSION="${MAJOR}.${MINOR}.$(( PATCH + 1 ))"
             echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           
           elif [[ ${{ github.ref_name }} == release/* && ${{ github.ref_name }} == *rc* && inputs.release_type == "official release" ]]
           then
             # Official release on a release RC branch → reset patch to zero
-            VERSION="${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.0"
+            VERSION="${MAJOR}.${MINOR}.0"
             echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           else
             echo "Ref branch does not match required criteria. Should either be "main" for "rc" type, a release branch for "bugfix" type or a release rc branch for "official release" type."
