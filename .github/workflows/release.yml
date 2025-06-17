@@ -61,7 +61,7 @@ jobs:
       contents: write
     if: needs.validation.outputs.RELEASE_VERSION
     outputs:
-      version: ${{ steps.resolve_version_patch.outputs.patch }}
+      patch: ${{ steps.resolve_version_patch.outputs.patch }}
     steps:
       - uses: actions/checkout@v4
       - name: Prepare Git Config
