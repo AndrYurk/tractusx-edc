@@ -55,7 +55,7 @@ jobs:
           GRADLE_VERSION=$(grep version= gradle.properties | cut -c 9-)
           IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"$GRADLE_VERSION"   
           
-          if [[ ${{ github.ref_name }} == "main" && ${{ inputs.release_type }} == "rc" ]];
+          if [[ ${{ github.ref_name }} == "main" && "${{ inputs.release_type }}" == "rc" ]];
           then
             # RC on main → count existing RCs for this version and bump
             COUNT=$(git ls-remote --heads origin "release/${MAJOR}.${MINOR}.${PATCH}-rc*" | wc -l)
