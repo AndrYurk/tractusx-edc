@@ -65,12 +65,14 @@ jobs:
             RC_VERSION=rc$(( COUNT + 1 ))
             VERSION="${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}-${RC_VERSION}"
             echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-          elif [[ ${{ github.ref_name }} == release/* && inputs.release_type == "bugfix" && ]]
+          
+          elif [[ ${{ github.ref_name }} == release/* && ${{ github.ref_name }} != *rc* && inputs.release_type == "bugfix" && ]]
           then
             # Bugfix on a release branch → increment patch
             VERSION="${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.$(( RELEASE_VERSION_PATCH + 1 ))"
             echo "version=${VERSION }" >> "$GITHUB_OUTPUT"
-          elif [[ ${{ github.ref_name }} == release/* && inputs.release_type == "official release" ]]
+          
+          elif [[ ${{ github.ref_name }} == release/* && ${{ github.ref_name }} == *rc* && inputs.release_type == "official release" ]]
           then
             # Official release on a release RC branch → reset patch to zero
             VERSION="${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.0"
