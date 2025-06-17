@@ -22,34 +22,61 @@
 
 ---
 name: "Draft Release"
-run-name: "Draft Release ${{ inputs.version }} from ${{ github.ref_name }}"
+run-name: "Draft Release ${{ inputs.release_type }} from ${{ github.ref_name }}"
 
 on:
   workflow_dispatch:
     inputs:
-      version:
-        description: 'The version you want to release. Ref should be either main for latest releases or a tag for bugfixes. '
+      release_type:
+        type: choice
+        description: 'The release type you want to release. Ref should be either main for RC or a branch for bugfixes and official releases. '
         required: true
-      sha:
-        description: "Optional commit SHA to create the release from"
-        required: false
+        options:
+          - RC
+          - bugfix
+          - official release
 
 jobs:
   validate-and-prepare:
     name: "Validate that tag does not already exist and prepare branch"
     runs-on: ubuntu-latest
-    if: ${{ github.ref_name == 'main' || startsWith(github.ref, 'refs/tags/') }}
+    if: ${{ github.ref_name == 'main' || startsWith(github.ref_name, 'release/') }}
     outputs:
+      version: ${{ steps.resolve_version.outputs.version }}
       branch_name: ${{ steps.resolve_branch.outputs.branch_name }}
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+      - id: resolve_version
+        name: "Resolve release version basing on release type"
+        run: |
+          GRADLE_VERSION=$(grep version= gradle.properties | cut -c 9-)
+          IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"GRADLE_VERSION"
+          
+          if [[ ${{ github.ref_name }} == "main" && inputs.release_type == "RC" ]];
+          then
+            # resolve RC version
+            RC_VERSION=rc$(git branch -r \
+              | sed 's| *origin/||' \
+              | grep -E '^release/${{ GRADLE_VERSION }}-RC' \
+              | wc -l) + 1
+            echo "version=${{ RELEASE_VERSION_MAJOR.RELEASE_VERSION_MINOR.RELEASE_VERSION_PATCH-RC_VERSION }}" >> "$GITHUB_OUTPUT"
+          elif [[ startsWith(${{ github.ref }}, 'release/') && inputs.release_type == "bugfix" && ]]
+          then
+            echo "version=${{ RELEASE_VERSION_MAJOR.RELEASE_VERSION_MINOR.RELEASE_VERSION_PATCH + 1 }}" >> "$GITHUB_OUTPUT"
+          elif [[ startsWith(${{ github.ref }}, 'release/') && inputs.release_type == "official release" ]]
+          then
+            echo "version=${{ RELEASE_VERSION_MAJOR.RELEASE_VERSION_MINOR.0 }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "Ref branch does not match required criteria. Should either be "main" for "RC" type, a release branch for "bugfix" type or a release RC branch for "official release" type."
+            exit 1
+          fi
       - id: check-tag
         name: "Check if tag exists"
         run: |-
 
-          tag=$(git tag -l ${{ inputs.version }})
+          tag=$(git tag -l ${{ steps.resolve_version.outputs.version }})
 
           if [ ! -z $tag ];
           then
@@ -57,46 +84,14 @@ jobs:
             exit 1
           fi
       - id: resolve_branch
-        name: "Resolve branch prefix (release or bugfix)"
+        name: "Resolve branch name"
         run: |
-          
-          if [[ ${{ github.ref_name }} == "main" ]];
-          then
-            echo "branch_name=release/${{ inputs.version }}" >> "$GITHUB_OUTPUT"
-          elif [[ ${{ github.ref }} == refs/tags/* ]]
-          then
-            echo "branch_name=bugfix/${{ inputs.version }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "Ref branch does not match required criteria. Should either be "main" or a tag."
-            exit 1
-          fi
-
-  update-dependencies:
-    name: "Update dependencies"
-    runs-on: ubuntu-latest
-    needs: validate-and-prepare
-    permissions:
-      contents: write
-      packages: write
-      pages: write
-    steps:
-      - name: Checkout base
-        uses: actions/checkout@v4
-      - uses: ./.github/actions/setup-java
-      - name: Check dependencies before release
-        uses: ./.github/actions/generate-and-check-dependencies
-        with:
-          run: strict
-      - name: Upload DEPENDENCIES file artifact
-        uses: actions/upload-artifact@v4
-        with:
-          name: dependencies
-          path: DEPENDENCIES
+            echo "branch_name=release/${{ steps.resolve_version.outputs.version }}" >> "$GITHUB_OUTPUT"
 
   draft-new-release:
     name: "Draft a new release"
     runs-on: ubuntu-latest
-    needs: [validate-and-prepare, update-dependencies]
+    needs: [validate-and-prepare]
     permissions:
       contents: write
       packages: write
@@ -106,20 +101,20 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: ${{ inputs.sha != '' && inputs.sha || github.ref_name }}
-      - name: Create Release or Bugfix branch
+          ref: ${{ github.ref_name }}
+      - name: Create Release branch
         run: git checkout -b ${{ needs.validate-and-prepare.outputs.branch_name }}
-      - name: Download DEPENDENCIES artifact
-        uses: actions/download-artifact@v4
+      - uses: ./.github/actions/setup-java
+      - name: Check dependencies before release
+        uses: ./.github/actions/generate-and-check-dependencies
         with:
-          name: dependencies
-          path: .
+          run: strict
       - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
         run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
       - name: Version and Chart Updates
         uses: ./.github/actions/update-version-and-charts
         with:
-          version: ${{ inputs.version }}
+          version: ${{ steps.resolve_version.outputs.version }}
           release_branch: "true"
       - name: Commit changes on release branch
         id: make-commit
@@ -127,44 +122,10 @@ jobs:
           git add .
           git config user.name "eclipse-tractusx-bot"
           git config user.email "tractusx-bot@eclipse.org"
-          git commit --message "Prepare release ${{ inputs.version }}"
+          git commit --message "Prepare release ${{ steps.resolve_version.outputs.version }}"
 
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
       - name: Push new branch
         run: git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
-
-  main-branch-update:
-    name: "Main Branch Update"
-    runs-on: ubuntu-latest
-    needs: [ validate-and-prepare, update-dependencies, draft-new-release ]
-    if: ${{ github.ref_name == 'main' || github.sha == inputs.sha }}
-    permissions:
-      contents: write
-      packages: write
-      pages: write
-    steps:
-      - name: Checkout main
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          ref: main
-      - name: Download DEPENDENCIES artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: dependencies
-          path: .
-      - name: Replace published DEPENDENCIES link in NOTICE
-        run: |
-          sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
-      - name: Version and Chart Updates
-        uses: ./.github/actions/update-version-and-charts
-        with:
-          version: ${{ inputs.version }}
-          release_branch: "false"
-      - name: Commit and push main updates
-        run: |
-          git add .
-          git config user.name "eclipse-tractusx-bot"
-          git config user.email "tractusx-bot@eclipse.org"
-          git commit -m "Prepare release ${{ inputs.version }}"
-          git push origin main
+      - name: Run All Tests
+        uses: ./.github/workflows/run-all-tests.yml
