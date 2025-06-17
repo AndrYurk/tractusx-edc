@@ -46,8 +46,6 @@ jobs:
       branch_name: ${{ steps.resolve_branch.outputs.branch_name }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
       - id: resolve_version
         name: "Resolve release version basing on release type"
         shell: bash
@@ -55,16 +53,13 @@ jobs:
           set -x
           # Read the current version (major.minor.patch[.snapshot]) from gradle.properties
           GRADLE_VERSION=$(grep version= gradle.properties | cut -c 9-)
-          IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"GRADLE_VERSION"
-          
-          RELEASE_TYPE="${{ inputs.release_type }}"
-          
+          IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"GRADLE_VERSION"   
           if [[ ${{ github.ref_name }} == "main" && ${{ inputs.release_type }} == "rc" ]];
           then
             # RC on main → count existing RCs for this version and bump
             COUNT=$(git branch -r \
                 | sed 's| *origin/||' \
-                | grep -E "^release/${RELEASE_VERELEASE_VERSION_MAJORRSION_MAJOR}.${RELEASE_VERSION_MINOR}.0-rc" \
+                | grep -E "^release/${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.0-rc" \
                 | wc -l)
             RC_VERSION=rc$(( COUNT + 1 ))
             VERSION="${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}-${RC_VERSION}"
