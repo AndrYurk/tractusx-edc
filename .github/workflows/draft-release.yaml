@@ -60,7 +60,10 @@ jobs:
           if [[ ${{ github.ref_name }} == "main" && "${{ inputs.release_type }}" == "rc" ]];
           then
             # RC on main → count existing RCs for this version and bump
-            COUNT=$(git branch -l origin "release/${MAJOR}.${MINOR}.${PATCH}-rc*" | wc -l)
+            COUNT=$(git branch -r |
+              sed 's| *origin/||' |
+              grep -E "^release/${MAJOR}\.${MINOR}\.0-rc" -c \
+              || true)
             RC_VERSION="rc$(( COUNT + 1 ))"
             VERSION="${MAJOR}.${MINOR}.${PATCH}-${RC_VERSION}"
             echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
