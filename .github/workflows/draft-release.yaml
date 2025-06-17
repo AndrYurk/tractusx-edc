@@ -130,7 +130,10 @@ jobs:
           git commit --message "Prepare release ${{ needs.validate-and-prepare.outputs.version }}"
 
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-      - name: Run all tests
-        uses: ./.github/workflows/run-all-tests.yml
       - name: Push new branch
         run: git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
+
+  run-all-tests:
+    name: "Run All Tests"
+    needs: [ validate-and-prepare, draft-new-release ]
+    uses: ./.github/workflows/run-all-tests.yml
