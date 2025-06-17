@@ -69,7 +69,7 @@ jobs:
             VERSION="${MAJOR}.${MINOR}.$(( PATCH + 1 ))"
             echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           
-          elif [[ ${{ github.ref_name }} == release/* && ${{ github.ref_name }} == *rc* && "${{ inputs.release_type }}"== "official release" ]]
+          elif [[ ${{ github.ref_name }} == release/* && ${{ github.ref_name }} == *rc* && "${{ inputs.release_type }}" == "official release" ]]
           then
             # Official release on a release RC branch → reset patch to zero
             VERSION="${MAJOR}.${MINOR}.0"
