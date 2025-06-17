@@ -56,7 +56,9 @@ jobs:
           GRADLE_VERSION=$(grep version= gradle.properties | cut -c 9-)
           IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"GRADLE_VERSION"
           
-          if [[ ${{ github.ref_name }} == "main" && inputs.release_type == "rc" ]];
+          RELEASE_TYPE="${{ inputs.release_type }}"
+          
+          if [[ ${{ github.ref_name }} == "main" && "${RELEASE_TYPE,,}" == "rc" ]];
           then
             # RC on main → count existing RCs for this version and bump
             COUNT=$(git branch -r \
