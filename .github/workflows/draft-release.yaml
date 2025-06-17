@@ -61,7 +61,7 @@ jobs:
             COUNT=$(git branch -r \
                 | sed 's| *origin/||' \
                 | grep -E "^release/${MAJOR}.${MINOR}.0-rc" -c \
-                | true)
+                || true)
             RC_VERSION="rc$(( COUNT + 1 ))"
             VERSION="${MAJOR}.${MINOR}.${PATCH}-${RC_VERSION}"
             echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
