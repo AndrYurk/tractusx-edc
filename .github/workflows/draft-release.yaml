@@ -55,7 +55,7 @@ jobs:
           GRADLE_VERSION=$(grep version= gradle.properties | cut -c 9-)
           IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"GRADLE_VERSION"
           
-          if [[ ${{ github.ref_name }} == "main" && inputs.release_type == "rc" ]];
+          if [[ ${{ github.ref_name }} == "main" ]];
           then
             # RC on main → count existing RCs for this version and bump
             COUNT=$(git branch -r \
@@ -78,7 +78,7 @@ jobs:
             VERSION="${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.0"
             echo "version=${VERSION }" >> "$GITHUB_OUTPUT"
           else
-            echo "Ref branch does not match required criteria. Should either be "main" for "RC" type, a release branch for "bugfix" type or a release RC branch for "official release" type."
+            echo "Ref branch does not match required criteria. Should either be "main" for "rc" type, a release branch for "bugfix" type or a release rc branch for "official release" type."
             exit 1
           fi
       - id: check-tag
