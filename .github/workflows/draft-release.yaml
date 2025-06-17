@@ -135,5 +135,5 @@ jobs:
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
       - name: Push new branch
         run: git push origin ${{ needs.validate-and-prepare.outputs.branch_name }}
-      - name: Run All Tests
+      - name: Run all tests
         uses: ./.github/workflows/run-all-tests.yml
