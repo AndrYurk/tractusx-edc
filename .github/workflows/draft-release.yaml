@@ -52,6 +52,7 @@ jobs:
         name: "Resolve release version basing on release type"
         shell: bash
         run: |
+          set -x
           # Read the current version (major.minor.patch[.snapshot]) from gradle.properties
           GRADLE_VERSION=$(grep version= gradle.properties | cut -c 9-)
           IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"GRADLE_VERSION"
