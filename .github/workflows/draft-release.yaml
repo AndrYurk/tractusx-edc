@@ -60,11 +60,11 @@ jobs:
             # RC on main → count existing RCs for this version and bump
             COUNT=$(git branch -r \
                 | sed 's| *origin/||' \
-                | grep -E "^release/${GRADLE_VERSION}-RC" \
+                | grep -E "^release/${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.0-rc" \
                 | wc -l)
             RC_VERSION=rc$(( COUNT + 1 ))
             VERSION="${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}-${RC_VERSION}"
-            echo "version=${VERSION }" >> "$GITHUB_OUTPUT"
+            echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
           elif [[ startsWith(${{ github.ref }}, 'release/') && inputs.release_type == "bugfix" && ]]
           then
             # Bugfix on a release branch → increment patch
