@@ -58,7 +58,7 @@ jobs:
           
           RELEASE_TYPE="${{ inputs.release_type }}"
           
-          if [[ ${{ github.ref_name }} == "main" && "${RELEASE_TYPE,,}" == "rc" ]];
+          if [[ ${{ github.ref_name }} == "main" && "${RELEASE_TYPE}" == "rc" ]];
           then
             # RC on main → count existing RCs for this version and bump
             COUNT=$(git branch -r \
