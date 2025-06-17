@@ -29,10 +29,10 @@ on:
     inputs:
       release_type:
         type: choice
-        description: 'The release type you want to release. Ref should be either main for RC or a branch for bugfixes and official releases. '
+        description: 'The release type you want to release. Ref should be either main for "rc" or a branch for "bugfix" and "official release". '
         required: true
         options:
-          - RC
+          - rc
           - bugfix
           - official release
 
@@ -55,7 +55,7 @@ jobs:
           GRADLE_VERSION=$(grep version= gradle.properties | cut -c 9-)
           IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"GRADLE_VERSION"
           
-          if [[ ${{ github.ref_name }} == "main" && inputs.release_type == "RC" ]];
+          if [[ ${{ github.ref_name }} == "main" && inputs.release_type == "rc" ]];
           then
             # RC on main → count existing RCs for this version and bump
             COUNT=$(git branch -r \
@@ -65,12 +65,12 @@ jobs:
             RC_VERSION=rc$(( COUNT + 1 ))
             VERSION="${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}-${RC_VERSION}"
             echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
-          elif [[ startsWith(${{ github.ref }}, 'release/') && inputs.release_type == "bugfix" && ]]
+          elif [[ ${{ github.ref_name }} == release/* && inputs.release_type == "bugfix" && ]]
           then
             # Bugfix on a release branch → increment patch
             VERSION="${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.$(( RELEASE_VERSION_PATCH + 1 ))"
             echo "version=${VERSION }" >> "$GITHUB_OUTPUT"
-          elif [[ startsWith(${{ github.ref }}, 'release/') && inputs.release_type == "official release" ]]
+          elif [[ ${{ github.ref_name }} == release/* && inputs.release_type == "official release" ]]
           then
             # Official release on a release RC branch → reset patch to zero
             VERSION="${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.0"
