@@ -51,23 +51,30 @@ jobs:
       - id: resolve_version
         name: "Resolve release version basing on release type"
         run: |
+          # Read the current version (major.minor.patch[.snapshot]) from gradle.properties
           GRADLE_VERSION=$(grep version= gradle.properties | cut -c 9-)
           IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"GRADLE_VERSION"
           
           if [[ ${{ github.ref_name }} == "main" && inputs.release_type == "RC" ]];
           then
-            # resolve RC version
-            RC_VERSION=rc$(git branch -r \
-              | sed 's| *origin/||' \
-              | grep -E '^release/${{ GRADLE_VERSION }}-RC' \
-              | wc -l) + 1
-            echo "version=${{ RELEASE_VERSION_MAJOR.RELEASE_VERSION_MINOR.RELEASE_VERSION_PATCH-RC_VERSION }}" >> "$GITHUB_OUTPUT"
+            # RC on main → count existing RCs for this version and bump
+            COUNT=$(git branch -r \
+                | sed 's| *origin/||' \
+                | grep -E "^release/${GRADLE_VERSION}-RC" \
+                | wc -l)
+            RC_VERSION=rc$(( COUNT + 1 ))
+            VERSION="${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.${RELEASE_VERSION_PATCH}-${RC_VERSION}"
+            echo "version=${VERSION }" >> "$GITHUB_OUTPUT"
           elif [[ startsWith(${{ github.ref }}, 'release/') && inputs.release_type == "bugfix" && ]]
           then
-            echo "version=${{ RELEASE_VERSION_MAJOR.RELEASE_VERSION_MINOR.RELEASE_VERSION_PATCH + 1 }}" >> "$GITHUB_OUTPUT"
+            # Bugfix on a release branch → increment patch
+            VERSION="${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.$(( RELEASE_VERSION_PATCH + 1 ))"
+            echo "version=${VERSION }" >> "$GITHUB_OUTPUT"
           elif [[ startsWith(${{ github.ref }}, 'release/') && inputs.release_type == "official release" ]]
           then
-            echo "version=${{ RELEASE_VERSION_MAJOR.RELEASE_VERSION_MINOR.0 }}" >> "$GITHUB_OUTPUT"
+            # Official release on a release RC branch → reset patch to zero
+            VERSION="${RELEASE_VERSION_MAJOR}.${RELEASE_VERSION_MINOR}.0"
+            echo "version=${VERSION }" >> "$GITHUB_OUTPUT"
           else
             echo "Ref branch does not match required criteria. Should either be "main" for "RC" type, a release branch for "bugfix" type or a release RC branch for "official release" type."
             exit 1
