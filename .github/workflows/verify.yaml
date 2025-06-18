@@ -39,7 +39,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref  }}
       - run: |
           docker run -v ${{ github.workspace }}/charts:/helm-docs jnorwood/helm-docs helm-docs
           
@@ -56,7 +56,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
       - name: Run Checkstyle
         run: |
@@ -69,7 +69,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
 
       - name: Run Javadoc
@@ -82,7 +82,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
 
       - name: Run Unit tests
@@ -95,7 +95,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
 
       - name: Run Integration tests
@@ -110,7 +110,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
 
       - name: Run API tests
@@ -125,7 +125,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - name: get api groups and create matrix for next job
         id: outputStep
         run: |
@@ -141,7 +141,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
 
       - name: Run E2E tests (${{ matrix.dir }})
@@ -167,7 +167,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
 
       - name: Run Postgresql E2E tests
@@ -183,7 +183,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-          ref: ${{ inputs.branch || github.head_ref || github.ref_name }}
+          ref: ${{ inputs.branch || github.ref }}
       - name: Output report version
         id: release-version
         run: |
