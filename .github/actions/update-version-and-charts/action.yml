@@ -63,4 +63,3 @@ runs:
         git commit --message "Prepare release ${{ inputs.version }}"
 
         echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
-        git push origin
