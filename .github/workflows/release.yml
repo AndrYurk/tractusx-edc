@@ -148,7 +148,6 @@ jobs:
         uses: ./.github/actions/update-version-and-charts
         with:
           version: ${{ needs.validation.outputs.RELEASE_VERSION }}
-          release_branch: "false"
       - name: Commit and push main updates
         run: |
           git add .

@@ -124,7 +124,6 @@ jobs:
         uses: ./.github/actions/update-version-and-charts
         with:
           version: ${{ needs.validate-and-prepare.outputs.version }}
-          release_branch: "true"
       - name: Commit changes on release branch
         id: make-commit
         run: |

@@ -23,9 +23,6 @@ inputs:
   version:
     description: 'The release version'
     required: true
-  release_branch:
-    description: 'Identifier for the release branch'
-    required: true
 runs:
   using: "composite"
   steps:
