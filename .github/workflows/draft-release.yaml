@@ -139,3 +139,5 @@ jobs:
     name: "Run All Tests"
     needs: [ validate-and-prepare, draft-new-release ]
     uses: ./.github/workflows/run-all-tests.yml
+    with:
+      branch: ${{ needs.validate-and-prepare.outputs.branch_name }}

@@ -26,6 +26,11 @@ on:
   workflow_call:
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Optional branch to check out. Defaults to the triggering branch.'
+        required: false
+        type: string
 
 jobs:
 
@@ -33,6 +38,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch || github.ref_name }}
       - run: |
           docker run -v ${{ github.workspace }}/charts:/helm-docs jnorwood/helm-docs helm-docs
           
@@ -48,7 +55,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+        with:
+          ref: ${{ inputs.branch || github.ref_name }}
       - uses: ./.github/actions/setup-java
       - name: Run Checkstyle
         run: |
@@ -60,6 +68,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch || github.ref_name }}
       - uses: ./.github/actions/setup-java
 
       - name: Run Javadoc
@@ -71,7 +81,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+        with:
+          ref: ${{ inputs.branch || github.ref_name }}
       - uses: ./.github/actions/setup-java
 
       - name: Run Unit tests
@@ -83,7 +94,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+        with:
+          ref: ${{ inputs.branch || github.ref_name }}
       - uses: ./.github/actions/setup-java
 
       - name: Run Integration tests
@@ -97,7 +109,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
+        with:
+          ref: ${{ inputs.branch || github.ref_name }}
       - uses: ./.github/actions/setup-java
 
       - name: Run API tests
@@ -111,6 +124,8 @@ jobs:
       matrix: ${{ steps.outputStep.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch || github.ref_name }}
       - name: get api groups and create matrix for next job
         id: outputStep
         run: |
@@ -125,6 +140,8 @@ jobs:
       matrix: ${{ fromJson(needs.prepare-end-to-end-tests.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch || github.ref_name }}
       - uses: ./.github/actions/setup-java
 
       - name: Run E2E tests (${{ matrix.dir }})
@@ -149,6 +166,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.branch || github.ref_name }}
       - uses: ./.github/actions/setup-java
 
       - name: Run Postgresql E2E tests
@@ -163,7 +182,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-
+        with:
+          ref: ${{ inputs.branch || github.ref_name }}
       - name: Output report version
         id: release-version
         run: |
