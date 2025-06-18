@@ -96,11 +96,6 @@ jobs:
           makeLatest: ${{ startsWith(github.ref_name, 'release/') && steps.resolve_version_patch.outputs.patch == '0' }}
           removeArtifacts: true
 
-#  run-all-tests:
-#    name: "Run All Tests"
-#    needs: [ validation, github-release ]
-#    uses: ./.github/workflows/run-all-tests.yml
-
   # Release: Update Release Notes with Allure Report Link
   publish-allure-report-link-to-release:
     name: "Update Release Notes with Allure Report Link"

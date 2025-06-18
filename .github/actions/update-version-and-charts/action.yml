@@ -17,14 +17,14 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-name: "Setup TractusX EDC in memory runtime"
-description: "Setup TractusX EDC in memory runtime"
+name: "Update version and charts"
+description: "Update version and charts"
 inputs:
   version:
     description: 'The release version'
     required: true
   release_branch:
-    description: 'Identifier fo the release branch'
+    description: 'Identifier for the release branch'
     required: true
 runs:
   using: "composite"
@@ -41,30 +41,19 @@ runs:
         options: -v ${{ github.workspace }}/charts:/helm-docs
         run: |
           helm-docs --log-level debug
-    - name: Bump version in gradle.properties for release
-      if: ${{ inputs.release_branch == 'true' }}
+    - name: Bump version in gradle.properties
+      if: ${{ startsWith(github.ref_name, 'release/') }}
       shell: bash
       run: |-
         # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
         sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
 
-    - name: Bump version in gradle.properties for main
-      if: ${{ inputs.release_branch == 'false' }}
+    - name: Bump snapshot version in gradle.properties
+      if: ${{ github.ref_name == 'main' }}
       shell: bash
       run: |-
-        IFS=.- read -r RELEASE_VERSION_MAJOR RELEASE_VERSION_MINOR RELEASE_VERSION_PATCH SNAPSHOT<<<"${{ inputs.version }}"
-          INC=0
-          # Compute new snapshot version, do not increment snapshot on non-final releases, e.g. -rc1
-          if [ -z $SNAPSHOT ]; then
-            # snapshot
-            echo "$VERSION is a final release version, increase patch for next snapshot"
-            INC=1
-          else
-            echo "$VERSION is not a final release version (contains \"$SNAPSHOT\"), will not increase patch"
-          fi
-        
-          VERSION="$RELEASE_VERSION_MAJOR.$((RELEASE_VERSION_MINOR+$INC)).0-SNAPSHOT"
-          SNAPSHOT_VERSION=$VERSION
+        IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ inputs.version }}"  
+          VERSION="$MAJOR.$((MINOR+1)).0-SNAPSHOT"
         
           # Persist the "version" in the gradle.properties
-          sed -i "s/version=.*/version=$SNAPSHOT_VERSION/g" gradle.properties
+          sed -i "s/version=.*/version=$VERSION/g" gradle.properties
