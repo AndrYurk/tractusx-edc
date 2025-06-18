@@ -39,14 +39,13 @@ runs:
         run: |
           helm-docs --log-level debug
     - name: Bump version in gradle.properties
-      if: ${{ startsWith(github.ref_name, 'release/') }}
+      if: ${{ github.workflow != 'draft-release' }}
       shell: bash
       run: |-
         # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
         sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
-
     - name: Bump snapshot version in gradle.properties
-      if: ${{ github.ref_name == 'main' }}
+      if: ${{ github.workflow == 'release' }}
       shell: bash
       run: |-
         IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ inputs.version }}"  
@@ -54,7 +53,6 @@ runs:
         
           # Persist the "version" in the gradle.properties
           sed -i "s/version=.*/version=$VERSION/g" gradle.properties
-
     - name: Commit changes
       id: make-commit
       shell: bash
