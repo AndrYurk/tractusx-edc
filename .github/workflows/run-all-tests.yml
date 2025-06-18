@@ -32,13 +32,12 @@ on:
     paths-ignore:
       - docs/**
   workflow_dispatch:
+  workflow_call:
     inputs:
       branch:
         description: 'Optional branch to check out. Defaults to the triggering branch.'
         required: false
         type: string
-  workflow_call:
-
   schedule:
     - cron: 0 3 * * 1 # run on 03:00 UTC every Monday
 
