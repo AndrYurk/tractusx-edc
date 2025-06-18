@@ -93,7 +93,7 @@ jobs:
           generateReleaseNotes: true
           tag: ${{ needs.validation.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          makeLatest: ${{ !contains(needs.validation.outputs.RELEASE_VERSION, 'rc') && steps.resolve_version_patch.outputs.patch == '0' }}
+          makeLatest: ${{ startsWith(github.ref_name, 'release/') && steps.resolve_version_patch.outputs.patch == '0' }}
           removeArtifacts: true
 
   # Release: Update Release Notes with Allure Report Link
@@ -148,3 +148,6 @@ jobs:
         uses: ./.github/actions/update-version-and-charts
         with:
           version: ${{ needs.validation.outputs.RELEASE_VERSION }}
+      - name: Push main updates
+        run: |
+          git push origin main
