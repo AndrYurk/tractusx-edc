@@ -148,3 +148,10 @@ jobs:
         uses: ./.github/actions/update-version-and-charts
         with:
           version: ${{ needs.validation.outputs.RELEASE_VERSION }}
+      - name: Commit and push main updates
+        run: |
+          git add .
+          git config user.name "eclipse-tractusx-bot"
+          git config user.email "tractusx-bot@eclipse.org"
+          git commit -m "Prepare release ${{ needs.validation.outputs.RELEASE_VERSION }}"
+          git push origin main
