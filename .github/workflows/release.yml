@@ -51,8 +51,20 @@ jobs:
         run: |
           IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ steps.release-version.outputs.RELEASE_VERSION }}" 
           echo "DEBUG: MAJOR='$MAJOR', MINOR='$MINOR', PATCH='$PATCH', SNAPSHOT='$SNAPSHOT'"
-          if [[ $PATCH == '0' && -z $SNAPSHOT ]]; then
+          if [[ $PATCH == '0' && -n $SNAPSHOT ]]; then
             echo "update_main_branch_version=true" >> $GITHUB_OUTPUT
+          fi
+          
+          if [[ $PATCH == '0' ]]; then
+            echo "DEBUG: $PATCH == '0' "
+          fi
+          
+          if [[ -n $SNAPSHOT ]]; then
+            echo "-n $SNAPSHOT" >> $GITHUB_OUTPUT
+          fi
+          
+          if [[ -z $SNAPSHOT ]]; then
+            echo "-z $SNAPSHOT" >> $GITHUB_OUTPUT
           fi
       - name: Validations
         run: |
