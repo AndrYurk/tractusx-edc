@@ -38,7 +38,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
-      update_main_branch_version: ${{ steps.update-main.outputs.RELEASE_VERSION }}
+      update_main_branch_version: ${{ steps.update-main.outputs.update_main_branch_version }}
     steps:
       - uses: actions/checkout@v4
       - name: Output release version
