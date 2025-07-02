@@ -47,7 +47,7 @@ jobs:
         run: |
           VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
           echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
-      - name: Output release version
+      - name: Output update main branch version
         id: update-main
         run: |
           IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ step.release-version.outputs.RELEASE_VERSION }}"   
