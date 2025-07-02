@@ -30,7 +30,6 @@ on:
 jobs:
   run-all-tests:
     name: "Run All Tests"
-    needs: [ validation, github-release ]
     uses: ./.github/workflows/run-all-tests.yml
   # Gate
   validation:
