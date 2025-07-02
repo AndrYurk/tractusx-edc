@@ -25,7 +25,7 @@ inputs:
     description: 'The release version'
     required: true
   bump_version:
-    description: 'The release version'
+    description: 'Should version be bumped'
     required: true
 runs:
   using: "composite"
@@ -43,7 +43,6 @@ runs:
         run: |
           helm-docs --log-level debug
     - name: Update version in gradle.properties
-      if: ${{ github.workflow == 'Draft Release' }}
       shell: bash
       run: |-
         if [[ "${{ inputs.bump_version }}" == "true") ]]
@@ -54,7 +53,6 @@ runs:
             # Persist the "version" in the gradle.properties
             sed -i "s/version=.*/version=$VERSION/g" gradle.properties
           else
-            # replace the project's (default) version, could be overwritten later with the -Pversion=... flag
             sed -i  's/version=.*/version=${{ inputs.version }}/g' gradle.properties
           fi
 
