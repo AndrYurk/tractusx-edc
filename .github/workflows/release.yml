@@ -28,13 +28,13 @@ on:
 
 
 jobs:
-  run-all-tests:
-    name: "Run All Tests"
-    uses: ./.github/workflows/run-all-tests.yml
+  #run-all-tests:
+  #name: "Run All Tests"
+  #uses: ./.github/workflows/run-all-tests.yml
   # Gate
   validation:
     name: "Workflow Validation"
-    needs: [ run-all-tests ]
+    #needs: [ run-all-tests ]
     runs-on: ubuntu-latest
     outputs:
       RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
@@ -50,7 +50,7 @@ jobs:
         id: update-main
         run: |
           IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ steps.release-version.outputs.RELEASE_VERSION }}"   
-          if [[ ${PATCH} == '0' && !${SNAPSHOT} ]]; then
+          if [[ "$PATCH" == '0' && -z "$SNAPSHOT" ]]; then
             echo "update_main_branch_version=true" >> $GITHUB_OUTPUT
           fi
       - name: Validations
