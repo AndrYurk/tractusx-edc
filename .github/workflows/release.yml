@@ -60,11 +60,11 @@ jobs:
           fi
           
           if [[ -n $SNAPSHOT ]]; then
-            echo "-n $SNAPSHOT" >> $GITHUB_OUTPUT
+            echo "-n SNAPSHOT with -n" >> $GITHUB_OUTPUT
           fi
           
           if [[ -z $SNAPSHOT ]]; then
-            echo "-z $SNAPSHOT" >> $GITHUB_OUTPUT
+            echo "-z SNAPSHOT with -z " >> $GITHUB_OUTPUT
           fi
       - name: Validations
         run: |
