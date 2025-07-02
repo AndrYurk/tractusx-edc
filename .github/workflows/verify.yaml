@@ -24,11 +24,6 @@ name: "Verify"
 
 on:
   workflow_call:
-    inputs:
-      branch:
-        description: 'Optional branch to check out. Defaults to the triggering branch.'
-        required: false
-        type: string
   # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:
 
@@ -38,8 +33,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.branch || github.ref  }}
       - run: |
           docker run -v ${{ github.workspace }}/charts:/helm-docs jnorwood/helm-docs helm-docs
           
@@ -55,8 +48,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
       - name: Run Checkstyle
         run: |
@@ -68,10 +59,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
-
       - name: Run Javadoc
         run: ./gradlew javadoc
         env:
@@ -81,10 +69,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
-
       - name: Run Unit tests
         run: ./gradlew test
         env:
@@ -94,10 +79,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
-
       - name: Run Integration tests
         run: |
           ./gradlew :edc-tests:runtime:mock-connector:dockerize
@@ -109,10 +91,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
-
       - name: Run API tests
         run: ./gradlew test -DincludeTags="ApiTest"
         env:
@@ -124,8 +103,6 @@ jobs:
       matrix: ${{ steps.outputStep.outputs.matrix }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.branch || github.ref }}
       - name: get api groups and create matrix for next job
         id: outputStep
         run: |
@@ -140,22 +117,17 @@ jobs:
       matrix: ${{ fromJson(needs.prepare-end-to-end-tests.outputs.matrix) }}
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
-
       - name: Run E2E tests (${{ matrix.dir }})
         run: |
           ./gradlew compileJava compileTestJava
           ./gradlew -p edc-tests/e2e/${{ matrix.dir }} test -DincludeTags="EndToEndTest" -PverboseTest=true --no-build-cache
         env:
           DEVELOCITY_ACCESS_KEY: ${{ secrets.DEVELOCITY_API_TOKEN }}
-
       - name: Set sanitized artifact name
         run: |
           SANITIZED_NAME=$(echo "edc-tests/e2e/${{ matrix.dir }}" | tr '/' '-')
           echo "ARTIFACT_NAME=${SANITIZED_NAME}" >> $GITHUB_ENV
-
       - name: Upload test artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -166,10 +138,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.branch || github.ref }}
       - uses: ./.github/actions/setup-java
-
       - name: Run Postgresql E2E tests
         run: ./gradlew test -DincludeTags="PostgresqlIntegrationTest" -PverboseTest=true
         env:
@@ -182,8 +151,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-        with:
-          ref: ${{ inputs.branch || github.ref }}
       - name: Output report version
         id: release-version
         run: |
@@ -195,7 +162,6 @@ jobs:
           else
             echo "RELEASE_VERSION=$VERSION" >> $GITHUB_OUTPUT
           fi
-
       - name: Generate and publish Allure report
         uses: ./.github/actions/generate-and-publish-allure-report
         with:

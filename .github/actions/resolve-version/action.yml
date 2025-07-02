@@ -62,5 +62,3 @@ runs:
           VERSION="${MAJOR}.${MINOR}.0"
           echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
         fi
-
-        echo "version=$VERSION" >> "$GITHUB_OUTPUT"
