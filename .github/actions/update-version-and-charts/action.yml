@@ -45,7 +45,7 @@ runs:
     - name: Update version in gradle.properties
       shell: bash
       run: |-
-        if [[ "${{ inputs.bump_version }}" == "true") ]]
+        if [[ "${{ inputs.bump_version }}" == "true" ]]
           then
             IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ inputs.version }}"  
             VERSION="$MAJOR.$((MINOR+1)).0-SNAPSHOT"
