@@ -22,7 +22,7 @@
 
 ---
 name: "Draft Release"
-run-name: "Draft ${{ inputs.release_type }} from ${{ github.ref_name }}"
+run-name: "Draft ${{ inputs.version }} from ${{ github.ref_name }}"
 
 on:
   workflow_dispatch:
