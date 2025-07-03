@@ -97,7 +97,7 @@ jobs:
           generateReleaseNotes: true
           tag: ${{ needs.validation.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          makeLatest: ${{ !contains(needs.validation.outputs.RELEASE_VERSION, 'rc') && steps.resolve_version_patch.outputs.patch == '0' }}
+          makeLatest: ${{ needs.validation.outputs.update_main_branch_version  == 'true' }}
           removeArtifacts: true
 
   # Release: Update Release Notes with Allure Report Link
