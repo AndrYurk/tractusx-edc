@@ -48,7 +48,7 @@ jobs:
           IFS=.- read -r MAJOR_INPUT MINOR_INPUT PATCH_INPUT SNAPSHOT_INPUT<<<"${{ inputs.version }}" 
           
           VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
-          IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"${{ VERSION }}" 
+          IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"$VERSION" 
           
           # Release Candidate: Can be created from a commit in main or a tagged release candidate commit.
           if [[ !( !-z $SNAPSHOT && !-z $SNAPSHOT_INPUT )
