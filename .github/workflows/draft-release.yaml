@@ -51,10 +51,10 @@ jobs:
           IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"$VERSION" 
           
           # Release Candidate: Can be created from a commit in main or a tagged release candidate commit.
-          # Bugfix: Can only be created from a tagged release bugfix or official release commit.
-          # Official Release: Can only be created from a tagged release candidate commit.
           if [[ !( ! -z $SNAPSHOT && ! -z $SNAPSHOT_INPUT )
+          # Bugfix: Can only be created from a tagged release bugfix or official release commit.
             && !( ${{ github.ref_name }} == release/* && -z $SNAPSHOT && -z $SNAPSHOT_INPUT && $PATCH_INPUT != '0' )
+          # Official Release: Can only be created from a tagged release candidate commit.
             && !( ${{ github.ref_name }} == release/* && $SNAPSHOT == *rc* && -z $SNAPSHOT_INPUT && $PATCH_INPUT == '0' ) ]]
           then
             echo "Ref branch does not match required criteria. Should either be "main" or release branch for "release candidate", a release branch for "bugfix" or a release rc branch for "official release"."
