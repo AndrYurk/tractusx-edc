@@ -53,7 +53,7 @@ jobs:
           # Release Candidate: Can be created from a commit in main or a tagged release candidate commit.
           # Bugfix: Can only be created from a tagged release bugfix or official release commit.
           # Official Release: Can only be created from a tagged release candidate commit.
-          if [[ !( !-z $SNAPSHOT && !-z $SNAPSHOT_INPUT )
+          if [[ !( ! -z $SNAPSHOT && ! -z $SNAPSHOT_INPUT )
             && !( ${{ github.ref_name }} == release/* && -z $SNAPSHOT && -z $SNAPSHOT_INPUT && $PATCH_INPUT != '0' )
             && !( ${{ github.ref_name }} == release/* && $SNAPSHOT == *rc* && -z $SNAPSHOT_INPUT && $PATCH_INPUT == '0' ) ]]
           then
