@@ -101,12 +101,12 @@ jobs:
       - name: Create Release branch
         run: git checkout -b ${{ needs.validate-and-prepare.outputs.branch_name }}
       - uses: ./.github/actions/setup-java
-#      - name: Check dependencies before release
-#        uses: ./.github/actions/generate-and-check-dependencies
-#        with:
-#          run: strict
-#      - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
-#        run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
+      - name: Check dependencies before release
+        uses: ./.github/actions/generate-and-check-dependencies
+        with:
+          run: strict
+      - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
+        run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
       - name: Version and Chart Updates
         uses: ./.github/actions/update-version-and-charts
         with:
