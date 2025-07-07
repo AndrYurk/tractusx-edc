@@ -59,14 +59,14 @@ jobs:
           
           # Bugfix
           elif [[ -z $SNAPSHOT_INPUT && $PATCH_INPUT != '0' ]] then 
-            if [[ ${{ !startsWith(github.ref, 'refs/tags/') }} || ! -z $SNAPSHOT  ]] then
+            if [[ ${{ github.ref_type }}  != 'tag'  || ! -z $SNAPSHOT  ]] then
               echo "You want to build a bugfix, but the selected commit is neither a bugfix not a official release"
             exit 1
             fi
           
           # Official Release
           elif [[ -z $SNAPSHOT_INPUT && $PATCH_INPUT == '0' ]] then
-            if [[ ${{ !startsWith(github.ref, 'refs/tags/') }} || $SNAPSHOT != *rc* ]] then
+            if [[ ${{ github.ref_type }} != 'tag' || $SNAPSHOT != *rc* ]] then
               echo "You want to build an official release, but the selected commit is not a release candidate"
             exit 1
             fi
