@@ -51,7 +51,7 @@ jobs:
           IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"$VERSION" 
           
           # Release Candidate    
-          if [[ ! -z $SNAPSHOT_INPUT && $PATCH_INPUT == '0' ]] then
+          if [[ ! -z $SNAPSHOT_INPUT ]] then
             if [[ -z $SNAPSHOT ]] then
               echo "You want to build a release candidate, but the selected commit is neither on main not a release candidate."
             exit 1
