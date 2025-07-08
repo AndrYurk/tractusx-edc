@@ -46,7 +46,7 @@ runs:
       with:
         cmd: |
           find charts -name Chart.yaml -maxdepth 3 | xargs -n1 yq -i '.appVersion = "${{ steps.resolver.outputs.version }}" 
-          | .version = "${{ steps.resolver.outputs.version }}"'
+            | .version = "${{ steps.resolver.outputs.version }}"'
     - name: Update Chart READMEs
       uses: addnab/docker-run-action@v3
       with:
