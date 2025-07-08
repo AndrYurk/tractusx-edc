@@ -27,10 +27,6 @@ inputs:
   bump_version:
     description: 'Should version be bumped'
     required: true
-outputs:
-  version:
-    description: 'Resolved version'
-    value: ${{ steps.resolver.outputs.version }}
 runs:
   using: "composite"
   steps:
