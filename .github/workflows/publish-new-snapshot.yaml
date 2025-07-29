@@ -39,7 +39,7 @@ on:
         description: 'Dated snapshot version.'
         default: false
         type: boolean
-        required: false
+        required: true
 
 
   # periodic build triggers are defined in run-all-tests.yml, which triggers this workflow
