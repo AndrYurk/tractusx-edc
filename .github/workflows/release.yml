@@ -35,7 +35,6 @@ jobs:
   # Gate
   validation:
     name: "Workflow Validation"
-    needs: [ run-all-tests ]
     runs-on: ubuntu-latest
     outputs:
       RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
@@ -71,7 +70,7 @@ jobs:
 
   github-release:
     name: Publish new github release
-    needs: [ validation, maven-release, docker-release, helm-release ]
+    needs: [ validation ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
