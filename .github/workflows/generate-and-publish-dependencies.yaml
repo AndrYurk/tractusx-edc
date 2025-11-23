@@ -38,7 +38,7 @@ jobs:
       - uses: ./.github/actions/setup-java
       - uses: ./.github/actions/generate-and-check-dependencies
         with:
-          run: ${{ github.ref_name != 'main' && 'strict' || 'standard' }}
+          run: ${{ startsWith(github.ref_name, 'release/') && 'strict' || 'standard' }}
       - name: Prepare to publish
         if: ${{ github.ref_name == 'main' }}
         shell: bash
@@ -53,5 +53,5 @@ jobs:
           publish_dir: public
           keep_files: true
       - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
-        if: ${{ github.ref_name != 'main' }}
+        if: ${{ startsWith(github.ref_name, 'release/') }}
         run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
