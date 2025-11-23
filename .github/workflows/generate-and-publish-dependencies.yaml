@@ -63,4 +63,5 @@ jobs:
           git config user.name "eclipse-tractusx-bot"
           git config user.email "tractusx-bot@eclipse.org"
           git commit --message "Update DEPENDENCIES file"
+          git push origin ${{ github.ref_name }}
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
