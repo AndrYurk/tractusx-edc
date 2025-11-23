@@ -55,3 +55,12 @@ jobs:
       - name: Replace published DEPENDENCIES file link in NOTICE with the one just created
         if: ${{ startsWith(github.ref_name, 'release/') }}
         run: sed -i "s#\[DEPENDENCIES\]\(.*\)#\[DEPENDENCIES\]\(DEPENDENCIES\)#g" NOTICE.md
+      - name: Commit DEPENDENCIES changes
+        if: ${{ startsWith(github.ref_name, 'release/') }}
+        shell: bash
+        run: |
+          git add .
+          git config user.name "eclipse-tractusx-bot"
+          git config user.email "tractusx-bot@eclipse.org"
+          git commit --message "Update DEPENDENCIES file"
+          echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
