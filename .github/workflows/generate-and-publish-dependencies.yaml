@@ -33,6 +33,8 @@ permissions:
 jobs:
   check-dependencies:
     runs-on: ubuntu-latest
+    outputs:
+      is_official_release: ${{ steps.release-type.outputs.is_official_release }}
     steps:
       - uses: actions/checkout@v5
       - uses: ./.github/actions/setup-java
