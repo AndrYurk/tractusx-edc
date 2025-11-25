@@ -41,13 +41,14 @@ jobs:
       - uses: ./.github/actions/setup-java
       - name: Output release type
         id: release-type
+        shell: bash
         run: |
           VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
           IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"$VERSION" 
           if [[ ! -z $SNAPSHOT ]] then
-          echo "is_official_release=false" >> "$GITHUB_OUTPUT"
+            echo "is_official_release=false" >> "$GITHUB_OUTPUT"
           else
-          echo "is_official_release=true" >> "$GITHUB_OUTPUT"
+            echo "is_official_release=true" >> "$GITHUB_OUTPUT"
           fi
       - name: Debug is_official_release
         run: echo "is_official_release=${{ needs.validate-and-prepare.outputs.is_official_release }}"
