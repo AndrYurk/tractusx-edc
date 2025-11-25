@@ -49,6 +49,8 @@ jobs:
           else
           echo "is_official_release=true" >> "$GITHUB_OUTPUT"
           fi
+      - name: Debug is_official_release
+        run: echo "is_official_release=${{ needs.validate-and-prepare.outputs.is_official_release }}"
       - uses: ./.github/actions/generate-and-check-dependencies
         with:
           run: ${{ steps.release-version.outputs.is_official_release == 'true' && 'strict' || 'standard' }}
