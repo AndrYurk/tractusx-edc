@@ -37,6 +37,7 @@ jobs:
       is_official_release: ${{ steps.release-type.outputs.is_official_release }}
     steps:
       - uses: actions/checkout@v5
+
       - uses: ./.github/actions/setup-java
       - name: Output release type
         id: release-type
