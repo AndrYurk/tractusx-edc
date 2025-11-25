@@ -33,8 +33,6 @@ permissions:
 jobs:
   check-dependencies:
     runs-on: ubuntu-latest
-    outputs:
-      is_official_release: ${{ steps.release-type.outputs.is_official_release }}
     steps:
       - uses: actions/checkout@v5
       - uses: ./.github/actions/setup-java
@@ -52,10 +50,10 @@ jobs:
           fi
 
       - name: Debug is_official_release
-        run: echo "is_official_release=${{ needs.validate-and-prepare.outputs.is_official_release }}"
+        run: echo "is_official_release=${{ steps.release_type.outputs.is_official_release }}"
       - uses: ./.github/actions/generate-and-check-dependencies
         with:
-          run: ${{ steps.release_version.outputs.is_official_release == 'true' && 'strict' || 'standard' }}
+          run: ${{ steps.release_type.outputs.is_official_release == 'true' && 'strict' || 'standard' }}
       - name: Prepare to publish
         if: ${{ github.ref_name == 'main' }}
         shell: bash
