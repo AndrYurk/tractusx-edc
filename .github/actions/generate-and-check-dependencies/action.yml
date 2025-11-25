@@ -48,7 +48,6 @@ runs:
 
     - name: Print file
       shell: bash
-      if: failure()
       run: |
         echo "=== Please copy the following content back to DEPENDENCIES ==="
         cat DEPENDENCIES
