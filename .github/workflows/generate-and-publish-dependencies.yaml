@@ -72,9 +72,15 @@ jobs:
         if: ${{ startsWith(github.ref_name, 'release/') }}
         shell: bash
         run: |
-          git add .
           git config user.name "eclipse-tractusx-bot"
           git config user.email "tractusx-bot@eclipse.org"
+
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "No changes to commit, skipping."
+            exit 0
+          fi
+
+          git add .
           git commit --message "Update DEPENDENCIES file"
           git push origin ${{ github.ref_name }}
           echo "commit=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
