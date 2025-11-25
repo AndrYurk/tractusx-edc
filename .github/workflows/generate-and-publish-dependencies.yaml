@@ -44,7 +44,7 @@ jobs:
           VERSION=$(grep "version" gradle.properties  | awk -F= '{print $2}')
           IFS=.- read -r MAJOR MINOR PATCH SNAPSHOT<<<"$VERSION"
           
-          if [[ ! -z $SNAPSHOT_INPUT ]] then
+          if [[ ! -z $SNAPSHOT ]] then
             echo "is_official_release=false" >> "$GITHUB_OUTPUT"
           else
             echo "is_official_release=true" >> "$GITHUB_OUTPUT"
