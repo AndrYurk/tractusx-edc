@@ -26,6 +26,12 @@ run-name: "Release from ${{ github.ref_name }}"
 
 on:
   workflow_dispatch:
+    inputs:
+      latest:
+        description: "Latest release"
+        required: true
+        type: boolean
+        default: false
 
 
 jobs:
@@ -102,6 +108,18 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           makeLatest: ${{ needs.validation.outputs.update_main_branch_version == 'true' }}
           removeArtifacts: true
+
+  # Release: Publish specs to GitHub Pages
+  publish-openapi-to-gh-pages:
+    name: "Publish OpenAPI UI spec GitHub Pages"
+    permissions:
+      contents: write
+    needs: [ validation ]
+    uses: ./.github/workflows/publish-openapi-ui.yml
+    secrets: inherit
+    with:
+      version: ${{ needs.validation.outputs.RELEASE_VERSION }}
+      latest: ${{ inputs.latest }}
 
   # Release: Update Release Notes with Allure Report Link
   publish-allure-report-link-to-release:
