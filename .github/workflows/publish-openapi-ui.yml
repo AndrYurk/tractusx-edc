@@ -40,6 +40,11 @@ on:
         required: false
         description: "Version of the Tractus-X EDC API to be should be published"
         type: string
+      latest:
+        description: "Latest release"
+        required: true
+        type: boolean
+        default: false
 
 jobs:
   generate-openapi-spec:
