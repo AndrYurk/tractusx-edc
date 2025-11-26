@@ -106,7 +106,7 @@ jobs:
           generateReleaseNotes: true
           tag: ${{ needs.validation.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          makeLatest: ${{ needs.validation.outputs.update_main_branch_version == 'true' }}
+          makeLatest: ${{ inputs.latest }}
           removeArtifacts: true
 
   # Release: Publish specs to GitHub Pages
