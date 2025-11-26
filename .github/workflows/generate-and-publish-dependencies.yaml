@@ -72,12 +72,12 @@ jobs:
         if: ${{ startsWith(github.ref_name, 'release/') }}
         shell: bash
         run: |
-          if git diff --quiet && git diff --cached --quiet; then
-            echo "No changes to commit, skipping."
-            exit 0
+          if git diff --quiet -- DEPENDENCIES; then
+           echo "No changes in DEPENDENCIES, skipping commit."
+           exit 0
           fi
-
-          git add .
+          
+          git add DEPENDENCIES
           git config user.name "eclipse-tractusx-bot"
           git config user.email "tractusx-bot@eclipse.org"
           git commit --message "Update DEPENDENCIES file"
