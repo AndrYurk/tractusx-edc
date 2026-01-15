@@ -33,8 +33,6 @@ permissions:
 jobs:
   check-dependencies:
     runs-on: ubuntu-latest
-    outputs:
-      is_official_release: ${{ steps.release-type.outputs.is_official_release }}
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@bf7454d06d71f1098171f2acdf0cd4708d7b5920 # v2.20.0
@@ -44,7 +42,6 @@ jobs:
         with:
           persist-credentials: true
       - uses: ./.github/actions/setup-java
-
       - name: Output release type
         id: release_type
         shell: bash
