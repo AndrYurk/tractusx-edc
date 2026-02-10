@@ -32,6 +32,11 @@ on:
         required: true
         type: boolean
         default: false
+      previous_tag:
+        description: "Generate release notes starting from tag"
+        type: string
+        required: true
+        default: ""
 
 
 jobs:
@@ -63,85 +68,89 @@ jobs:
           else 
             echo "update_main_branch_version=false" >> $GITHUB_OUTPUT
           fi
-      - name: Validations
+#      - name: Validations
+#        run: |
+#          if [[ "${{ github.repository }}" != "eclipse-tractusx/tractusx-edc" ]]; then
+#            echo "This workflow can only be run on the eclipse-tractusx/tractusx-edc repository."
+#            exit 1
+#          fi
+#
+#          if [[ ! "${{ github.ref_name }}" =~ ^release/ ]]; then
+#            echo "This workflow can only be run on the branches starting with release/."
+#            exit 1
+#          fi
+#
+#          if [[ "${{steps.release-version.outputs.RELEASE_VERSION}}" =~ SNAPSHOT ]]; then
+#            echo "This workflow can not be executed for SNAPSHOT versions."
+#            exit 1
+#          fi
+      - name: Validate previous_tag exists
         run: |
-          if [[ "${{ github.repository }}" != "eclipse-tractusx/tractusx-edc" ]]; then
-            echo "This workflow can only be run on the eclipse-tractusx/tractusx-edc repository."
-            exit 1
-          fi
-
-          if [[ ! "${{ github.ref_name }}" =~ ^release/ ]]; then
-            echo "This workflow can only be run on the branches starting with release/."
-            exit 1
-          fi
-          
-          if [[ "${{steps.release-version.outputs.RELEASE_VERSION}}" =~ SNAPSHOT ]]; then
-            echo "This workflow can not be executed for SNAPSHOT versions."
-            exit 1
-          fi
+          git show-ref --tags --verify --quiet "refs/tags/${{ inputs.previous_tag }}" \
+            || (echo "Tag '${{ inputs.previous_tag }}' not found." && exit 1)
   
 
-  # Release: Maven Artifacts
-  maven-release:
-    name: Publish extension's release version to maven repository
-    needs: [ validation ]
-    permissions:
-      contents: read
-    if: needs.validation.outputs.RELEASE_VERSION
-    uses: ./.github/workflows/trigger-maven-publish.yaml
-    secrets: inherit
-    with:
-      version: ${{ needs.validation.outputs.RELEASE_VERSION }}
-
-  # Release: docker images
-  docker-release:
-    name: Publish Docker images
-    needs: [ validation ]
-    if: needs.validation.outputs.RELEASE_VERSION
-    uses: ./.github/workflows/trigger-docker-publish.yaml
-    secrets: inherit
-    with:
-      docker_tag: ${{ needs.validation.outputs.RELEASE_VERSION }}
-
-  # Release: Helm charts
-  helm-release:
-    name: Publish helm charts
-    needs: [ validation ]
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-      pages: write
-
-    if: needs.validation.outputs.RELEASE_VERSION
-    steps:
-      - uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-      - uses: ./.github/actions/setup-helm
-      - name: Package helm, update index.yaml and push to gh-pages
-        run: |
-          # Prepare git env
-          git config user.name "eclipse-tractusx-bot"
-          git config user.email "tractusx-bot@eclipse.org"
-
-          # Package all charts
-          find charts -name Chart.yaml -not -path "./edc-tests/*" | xargs -n1 dirname | xargs -n1 helm package -u -d helm-charts
-
-          git checkout gh-pages || git checkout -b gh-pages
-          git pull --rebase origin gh-pages
-
-          # Generate helm repo index.yaml
-          helm repo index . --merge index.yaml --url https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/
-
-          # Commit and push to gh-pages
-          git add index.yaml helm-charts
-          git commit -s -m "Release ${{ needs.validation.outputs.RELEASE_VERSION }}"
-
-          git push origin gh-pages
+#  # Release: Maven Artifacts
+#  maven-release:
+#    name: Publish extension's release version to maven repository
+#    needs: [ validation ]
+#    permissions:
+#      contents: read
+#    if: needs.validation.outputs.RELEASE_VERSION
+#    uses: ./.github/workflows/trigger-maven-publish.yaml
+#    secrets: inherit
+#    with:
+#      version: ${{ needs.validation.outputs.RELEASE_VERSION }}
+#
+#  # Release: docker images
+#  docker-release:
+#    name: Publish Docker images
+#    needs: [ validation ]
+#    if: needs.validation.outputs.RELEASE_VERSION
+#    uses: ./.github/workflows/trigger-docker-publish.yaml
+#    secrets: inherit
+#    with:
+#      docker_tag: ${{ needs.validation.outputs.RELEASE_VERSION }}
+#
+#  # Release: Helm charts
+#  helm-release:
+#    name: Publish helm charts
+#    needs: [ validation ]
+#    runs-on: ubuntu-latest
+#    permissions:
+#      contents: write
+#      pages: write
+#
+#    if: needs.validation.outputs.RELEASE_VERSION
+#    steps:
+#      - uses: actions/checkout@v6
+#        with:
+#          fetch-depth: 0
+#      - uses: ./.github/actions/setup-helm
+#      - name: Package helm, update index.yaml and push to gh-pages
+#        run: |
+#          # Prepare git env
+#          git config user.name "eclipse-tractusx-bot"
+#          git config user.email "tractusx-bot@eclipse.org"
+#
+#          # Package all charts
+#          find charts -name Chart.yaml -not -path "./edc-tests/*" | xargs -n1 dirname | xargs -n1 helm package -u -d helm-charts
+#
+#          git checkout gh-pages || git checkout -b gh-pages
+#          git pull --rebase origin gh-pages
+#
+#          # Generate helm repo index.yaml
+#          helm repo index . --merge index.yaml --url https://${GITHUB_REPOSITORY_OWNER}.github.io/${GITHUB_REPOSITORY#*/}/
+#
+#          # Commit and push to gh-pages
+#          git add index.yaml helm-charts
+#          git commit -s -m "Release ${{ needs.validation.outputs.RELEASE_VERSION }}"
+#
+#          git push origin gh-pages
 
   github-release:
     name: Publish new github release
-    needs: [ validation, maven-release, docker-release, helm-release ]
+    needs: [ validation ]
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -169,6 +178,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           generateReleaseNotes: true
+          previousTag: ${{ inputs.previous_tag }}
           tag: ${{ needs.validation.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
           makeLatest: ${{ inputs.latest }}
