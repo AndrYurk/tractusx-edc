@@ -186,17 +186,17 @@ jobs:
           makeLatest: ${{ inputs.latest }}
           removeArtifacts: true
 
-  # Release: Publish specs to GitHub Pages
-  publish-openapi-to-gh-pages:
-    name: "Publish OpenAPI UI spec GitHub Pages"
-    permissions:
-      contents: write
-    needs: [ validation ]
-    uses: ./.github/workflows/publish-openapi-ui.yml
-    secrets: inherit
-    with:
-      version: ${{ needs.validation.outputs.RELEASE_VERSION }}
-      latest: ${{ inputs.latest }}
+#  # Release: Publish specs to GitHub Pages
+#  publish-openapi-to-gh-pages:
+#    name: "Publish OpenAPI UI spec GitHub Pages"
+#    permissions:
+#      contents: write
+#    needs: [ validation ]
+#    uses: ./.github/workflows/publish-openapi-ui.yml
+#    secrets: inherit
+#    with:
+#      version: ${{ needs.validation.outputs.RELEASE_VERSION }}
+#      latest: ${{ inputs.latest }}
 
   # Release: Update Release Notes with Allure Report Link
   publish-allure-report-link-to-release:
