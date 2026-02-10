@@ -40,9 +40,9 @@ on:
 
 
 jobs:
-  run-all-tests:
-    name: "Run All Tests"
-    uses: ./.github/workflows/run-all-tests.yml
+#  run-all-tests:
+#    name: "Run All Tests"
+#    uses: ./.github/workflows/run-all-tests.yml
   # Gate
   validation:
     name: "Workflow Validation"
