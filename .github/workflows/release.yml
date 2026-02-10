@@ -180,7 +180,7 @@ jobs:
         uses: ncipollo/release-action@v1
         with:
           generateReleaseNotes: true
-          previousTag: ${{ inputs.previous_tag }}
+          generateReleaseNotesPreviousTag: ${{ inputs.previous_tag }}
           tag: ${{ needs.validation.outputs.RELEASE_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
           makeLatest: ${{ inputs.latest }}
