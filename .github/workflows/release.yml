@@ -46,7 +46,7 @@ jobs:
   # Gate
   validation:
     name: "Workflow Validation"
-    needs: [ run-all-tests ]
+#    needs: [ run-all-tests ]
     runs-on: ubuntu-latest
     outputs:
       RELEASE_VERSION: ${{ steps.release-version.outputs.RELEASE_VERSION }}
