@@ -3677,10 +3677,6 @@ components:
       title: AssetSchema
       type: object
       example:
-        dataAddress:
-          '@type': '@type'
-          type: type
-          example: ""
         '@type': '@type'
         dataplaneMetadata:
           '@type': '@type'
@@ -3723,31 +3719,8 @@ components:
           type: object
           example:
             privateKey: privateValue
-        dataAddress:
-          $ref: "#/components/schemas/data-address-schema"
         dataplaneMetadata:
           $ref: "#/components/schemas/dataplane-metadata-schema"
-    data-address-schema:
-      title: DataAddressSchema
-      type: object
-      example:
-        '@type': '@type'
-        type: type
-        example: ""
-      allOf:
-      - $ref: "#/components/schemas/DataAddress_1"
-    DataAddress_1:
-      required:
-      - '@type'
-      - type
-      type: object
-      properties:
-        '@type':
-          type: string
-        type:
-          type: string
-        example:
-          type: type
     dataplane-metadata-schema:
       title: DataplaneMetadataSchema
       type: object
@@ -4908,8 +4881,6 @@ components:
           type: string
         privateProperties:
           type: object
-        dataDestination:
-          $ref: "#/components/schemas/data-address-schema"
         callbackAddresses:
           type: array
           items:
@@ -5032,10 +5003,6 @@ components:
         contractId: contractId
         transferType: transferType
         errorDetail: errorDetail
-        dataDestination:
-          '@type': '@type'
-          type: type
-          example: ""
         correlationId: correlationId
         '@id': '@id'
         state: state
@@ -5083,8 +5050,6 @@ components:
           type: string
         errorDetail:
           type: string
-        dataDestination:
-          $ref: "#/components/schemas/data-address-schema"
         dataplaneMetadata:
           $ref: "#/components/schemas/dataplane-metadata-schema"
     catalog-schema:
@@ -6223,19 +6188,15 @@ components:
           type: array
           items:
             type: string
-      example: |
-        {
-            "@context": {
-                "edc": "https://w3id.org/edc/v0.0.1/ns/",
-                "tx": "https://w3id.org/tractusx/v0.0.1/ns/"
-            },
-            "@type": "tx:ConnectorParamsDiscoveryRequest",
-            "edc:counterPartyId": "did:web:one-example.com",
-            "tx:knownConnectors": [
-                "https://provider.domain.com/conn1/api/dsp",
-                "https://provider.domain.com/conn2/api/v1/dsp",
-            ]
-        }
+      example:
+        '@context':
+          edc: https://w3id.org/edc/v0.0.1/ns/
+          tx: https://w3id.org/tractusx/v0.0.1/ns/
+        '@type': tx:ConnectorServiceDiscoveryRequest
+        edc:counterPartyId: did:web:one-example.com
+        tx:knownConnectors:
+        - https://provider.domain.com/conn1/api/dsp
+        - https://provider.domain.com/conn2/api/v1/dsp
     contract-request-schema:
       title: ContractRequestSchema
       type: object
