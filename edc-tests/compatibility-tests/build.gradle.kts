@@ -47,5 +47,4 @@ dependencies {
     testImplementation(testFixtures(libs.edc.api.management.test.fixtures))
     testImplementation(testFixtures(libs.edc.sql.test.fixtures))
     testImplementation(testFixtures(project(":edc-tests:e2e-fixtures")))
-    testImplementation("com.networknt:json-schema-validator:2.0.0")
 }
