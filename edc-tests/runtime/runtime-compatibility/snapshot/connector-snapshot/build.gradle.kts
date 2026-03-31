@@ -24,15 +24,14 @@ plugins {
 }
 
 dependencies {
-    runtimeOnly(project(mapOf(
-        "path" to ":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault",
-        "configuration" to "shadowRuntimeElements"
-    )))
+    implementation(project(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")) {
+        exclude("org.eclipse.edc", "vault-hashicorp")
+    }
 
-    runtimeOnly(project(mapOf(
-        "path" to ":edc-dataplane:edc-dataplane-hashicorp-vault",
-        "configuration" to "shadowRuntimeElements"
-    )))
+    implementation(project(":edc-dataplane:edc-dataplane-hashicorp-vault")) {
+        exclude("org.eclipse.edc", "data-plane-selector-client")
+        exclude("org.eclipse.edc", "vault-hashicorp")
+    }
 
     implementation(project(":edc-extensions:single-participant-vault"))
 }

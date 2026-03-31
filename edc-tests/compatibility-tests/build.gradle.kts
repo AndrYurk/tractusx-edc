@@ -23,6 +23,7 @@ plugins {
 }
 
 configurations.all {
+    exclude("com.networknt", "json-schema-validator")
     exclude("org.eclipse.edc", "decentralized-claims-core")
 }
 
@@ -41,7 +42,9 @@ dependencies {
     testImplementation(libs.jacksonJsonP)
     testImplementation(libs.restAssured)
     testImplementation(libs.awaitility)
-    testImplementation(libs.wiremock)
+    testImplementation(libs.wiremock) {
+        exclude("com.networknt", "json-schema-validator")
+    }
     testImplementation(libs.testcontainers.junit)
     testImplementation(libs.testcontainers.postgres)
     testImplementation(testFixtures(libs.edc.api.management.test.fixtures))
