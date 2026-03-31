@@ -24,11 +24,13 @@ plugins {
 }
 
 dependencies {
-    implementation(project(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")) {
+    runtimeOnly(project(":edc-controlplane:edc-controlplane-postgresql-hashicorp-vault")) {
+        isTransitive = false
         exclude("org.eclipse.edc", "vault-hashicorp")
     }
 
-    implementation(project(":edc-dataplane:edc-dataplane-hashicorp-vault")) {
+    runtimeOnly(project(":edc-dataplane:edc-dataplane-hashicorp-vault")) {
+        isTransitive = false
         exclude("org.eclipse.edc", "data-plane-selector-client")
         exclude("org.eclipse.edc", "vault-hashicorp")
     }
