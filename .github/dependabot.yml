@@ -38,7 +38,7 @@ updates:
       - dependency-name: "org.eclipse.dataspacetck.dsp:*"
       - dependency-name: "org.eclipse.dataspacetck.dcp:*"
       - dependency-name: "*"
-        versions: [ "*SNAPSHOT" ]
+        versions: [ "*-SNAPSHOT" ]
 
   # Github Actions
   -
