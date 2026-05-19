@@ -60,7 +60,7 @@ maven/mavencentral/com.nimbusds/content-type/2.3, Apache-2.0, approved, clearlyd
 maven/mavencentral/com.nimbusds/lang-tag/1.7, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/10.0.1, Apache-2.0, approved, #18354
 maven/mavencentral/com.nimbusds/nimbus-jose-jwt/10.6, Apache-2.0, approved, clearlydefined
-maven/mavencentral/com.nimbusds/nimbus-jose-jwt/10.9, , restricted, clearlydefined
+maven/mavencentral/com.nimbusds/nimbus-jose-jwt/10.9, Apache-2.0, approved, #28183
 maven/mavencentral/com.nimbusds/oauth2-oidc-sdk/11.23, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.squareup.okhttp3/okhttp-dnsoverhttps/5.3.2, Apache-2.0, approved, clearlydefined
 maven/mavencentral/com.squareup.okhttp3/okhttp-jvm/5.3.2, Apache-2.0, approved, clearlydefined
@@ -121,14 +121,13 @@ maven/mavencentral/io.netty/netty-transport/4.1.118.Final, Apache-2.0 AND BSD-3-
 maven/mavencentral/io.netty/netty-transport/4.1.126.Final, Apache-2.0 AND BSD-3-Clause AND MIT, approved, CQ20926
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/1.32.0, Apache-2.0, approved, #11684
 maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-annotations/2.27.0, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api-incubator/2.26.1-alpha, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api/2.26.1, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17/2.26.1-alpha, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-context-data-2.17-autoconfigure/2.26.1-alpha, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api-incubator/2.27.0-alpha, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-instrumentation-api/2.27.0, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-appender-2.17/2.27.0-alpha, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry.instrumentation/opentelemetry-log4j-context-data-2.17-autoconfigure/2.27.0-alpha, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry.semconv/opentelemetry-semconv/1.40.0, , restricted, clearlydefined
-maven/mavencentral/io.opentelemetry/opentelemetry-api-incubator/1.60.1-alpha, , restricted, clearlydefined
+maven/mavencentral/io.opentelemetry/opentelemetry-api-incubator/1.61.0-alpha, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.32.0, Apache-2.0, approved, #11682
-maven/mavencentral/io.opentelemetry/opentelemetry-api/1.60.1, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-api/1.61.0, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-common/1.61.0, , restricted, clearlydefined
 maven/mavencentral/io.opentelemetry/opentelemetry-context/1.61.0, , restricted, clearlydefined
@@ -164,13 +163,12 @@ maven/mavencentral/org.apache.commons/commons-pool2/2.12.1, Apache-2.0 AND Licen
 maven/mavencentral/org.apache.httpcomponents/httpclient/4.5.13, Apache-2.0, approved, #15248
 maven/mavencentral/org.apache.httpcomponents/httpcore/4.4.13, Apache-2.0, approved, CQ23528
 maven/mavencentral/org.apache.httpcomponents/httpcore/4.4.16, Apache-2.0, approved, CQ23528
-maven/mavencentral/org.apache.logging.log4j/log4j-api/2.25.4, Apache-2.0, approved, #21940
-maven/mavencentral/org.apache.logging.log4j/log4j-core/2.25.4, Apache-2.0 AND (Apache-2.0 AND LGPL-2.0-or-later), approved, #21939
-maven/mavencentral/org.apache.logging.log4j/log4j-layout-template-json/2.25.4, , restricted, clearlydefined
+maven/mavencentral/org.apache.logging.log4j/log4j-api/2.26.0, Apache-2.0, approved, #27998
+maven/mavencentral/org.apache.logging.log4j/log4j-core/2.26.0, Apache-2.0 AND (Apache-2.0 AND LGPL-2.0-or-later), approved, #28001
+maven/mavencentral/org.apache.logging.log4j/log4j-layout-template-json/2.26.0, , restricted, clearlydefined
 maven/mavencentral/org.bouncycastle/bcpkix-jdk18on/1.82, MIT, approved, #23373
 maven/mavencentral/org.bouncycastle/bcprov-jdk18on/1.82, MIT AND CC0-1.0, approved, #23374
 maven/mavencentral/org.bouncycastle/bcutil-jdk18on/1.82, MIT, approved, #23375
-maven/mavencentral/org.checkerframework/checker-qual/3.52.0, MIT, approved, #26057
 maven/mavencentral/org.eclipse.edc.aws/aws-s3-core/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc.aws/aws-spi/0.15.1, Apache-2.0, approved, technology.edc
 maven/mavencentral/org.eclipse.edc.aws/data-plane-aws-s3/0.15.1, Apache-2.0, approved, technology.edc
@@ -414,8 +412,8 @@ maven/mavencentral/org.eclipse.jetty/jetty-server/12.1.4, EPL-2.0 OR Apache-2.0,
 maven/mavencentral/org.eclipse.jetty/jetty-session/12.1.4, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.jetty/jetty-util/12.1.4, EPL-2.0 OR Apache-2.0, approved, rt.jetty
 maven/mavencentral/org.eclipse.parsson/parsson/1.1.7, EPL-2.0, approved, ee4j.parsson
-maven/mavencentral/org.flywaydb/flyway-core/12.4.0, , restricted, clearlydefined
-maven/mavencentral/org.flywaydb/flyway-database-postgresql/12.4.0, , restricted, clearlydefined
+maven/mavencentral/org.flywaydb/flyway-core/12.5.0, Apache-2.0, restricted, clearlydefined
+maven/mavencentral/org.flywaydb/flyway-database-postgresql/12.5.0, NOASSERTION, restricted, clearlydefined
 maven/mavencentral/org.glassfish.hk2.external/aopalliance-repackaged/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-api/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
 maven/mavencentral/org.glassfish.hk2/hk2-locator/3.0.6, EPL-2.0 OR GPL-2.0-only with Classpath-exception-2.0, approved, ee4j.glassfish
@@ -441,7 +439,7 @@ maven/mavencentral/org.jspecify/jspecify/1.0.0, Apache-2.0, approved, #21897
 maven/mavencentral/org.jvnet.mimepull/mimepull/1.9.15, CDDL-1.1 OR GPL-2.0-only WITH Classpath-exception-2.0, approved, CQ21484
 maven/mavencentral/org.latencyutils/LatencyUtils/2.0.3, CC0-1.0, approved, #15280
 maven/mavencentral/org.ow2.asm/asm/9.7.1, BSD-3-Clause, approved, #16464
-maven/mavencentral/org.postgresql/postgresql/42.7.10, BSD-2-Clause AND Apache-2.0, approved, #11681
+maven/mavencentral/org.postgresql/postgresql/42.7.11, BSD-2-Clause AND Apache-2.0, approved, #11681
 maven/mavencentral/org.postgresql/postgresql/42.7.8, BSD-2-Clause AND Apache-2.0, approved, #11681
 maven/mavencentral/org.reactivestreams/reactive-streams/1.0.4, CC0-1.0, approved, CQ16332
 maven/mavencentral/org.slf4j/slf4j-api/1.7.36, MIT, approved, CQ13368
@@ -478,7 +476,7 @@ maven/mavencentral/software.amazon.awssdk/retries-spi/2.38.2, Apache-2.0, approv
 maven/mavencentral/software.amazon.awssdk/retries/2.38.2, Apache-2.0, approved, #24772
 maven/mavencentral/software.amazon.awssdk/s3/2.38.2, Apache-2.0, approved, #24769
 maven/mavencentral/software.amazon.awssdk/sdk-core/2.38.2, Apache-2.0, approved, #24774
-maven/mavencentral/software.amazon.awssdk/sts/2.38.2, Apache-2.0, approved, clearlydefined
+maven/mavencentral/software.amazon.awssdk/sts/2.38.2, Apache-2.0, approved, #27927
 maven/mavencentral/software.amazon.awssdk/third-party-jackson-core/2.38.2, Apache-2.0, approved, #24778
 maven/mavencentral/software.amazon.awssdk/utils-lite/2.38.2, Apache-2.0, approved, #24762
 maven/mavencentral/software.amazon.awssdk/utils/2.38.2, Apache-2.0, approved, #24783
