@@ -17,10 +17,9 @@
 #  SPDX-License-Identifier: Apache-2.0
 #################################################################################
 
-
 ---
 name: "Dependabot (on-demand)"
-run-name: "Dependabot (all ecosystems) on ${{ inputs.branch }}"
+run-name: "Dependabot (gradle ecosystem) on ${{ inputs.branch }}"
 
 on:
   workflow_dispatch:
@@ -35,26 +34,12 @@ permissions:
 jobs:
   run:
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - ecosystem: gradle
-            directory: /
-          - ecosystem: github_actions
-            directory: /
-          - ecosystem: docker
-            directory: /resources
-          - ecosystem: docker
-            directory: /edc-extensions/bdrs-client/src/test/resources
-          - ecosystem: docker
-            directory: /edc-tests/e2e-fixtures/src/testFixtures/resources
-    name: "${{ matrix.ecosystem }} (${{ matrix.directory }})"
+    name: "gradle dependency"
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       LOCAL_GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      ECOSYSTEM: ${{ matrix.ecosystem }}
-      DIRECTORY: ${{ matrix.directory }}
+      ECOSYSTEM: gradle
+      DIRECTORY: /
       BRANCH: ${{ inputs.branch }}
       REPO: ${{ github.repository }}
     steps:
