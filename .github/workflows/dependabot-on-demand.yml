@@ -34,7 +34,7 @@ permissions:
 jobs:
   run:
     runs-on: ubuntu-latest
-    name: "gradle dependency"
+    name: "Gradle dependency"
     env:
       GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       LOCAL_GITHUB_ACCESS_TOKEN: ${{ secrets.GITHUB_TOKEN }}
