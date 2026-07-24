@@ -81,6 +81,20 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /check/liveness:
+    get:
+      tags:
+      - Application Observability
+      description: Performs a liveness probe to determine whether the runtime is working
+        properly.
+      operationId: getLiveness
+      responses:
+        "200":
+          description: The runtime is working properly.
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
   /v4alpha/dataflows/{id}/trigger:
     post:
       tags:
@@ -127,20 +141,53 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ApiErrorDetail_1"
-  /check/liveness:
-    get:
+      deprecated: true
+  /v3/dataflows/{id}/trigger:
+    post:
       tags:
-      - Application Observability
-      description: Performs a liveness probe to determine whether the runtime is working
-        properly.
-      operationId: getLiveness
+      - DataFlow API V3
+      description: "Requests the trigger of a data transfer. Due to the asynchronous\
+        \ nature of transfers, a successful response only indicates that the request\
+        \ was successfully received."
+      operationId: triggerDataTransferV3
+      parameters:
+      - name: id
+        in: path
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
       responses:
-        "200":
-          description: The runtime is working properly.
+        "204":
+          description: Request was sucessfully received
+          links:
+            poll-state:
+              operationId: triggerDataTransferV3
+        "400":
+          description: Request was malformed
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/HealthStatus"
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail_1"
+        "404":
+          description: Data flow with the given ID does not exist
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail_1"
+        "409":
+          description: Data flow is not in a required state
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ApiErrorDetail_1"
   /aas/request:
     post:
       tags:
@@ -196,6 +243,9 @@ components:
         expires:
           type: integer
           format: int64
+        expires_in:
+          type: integer
+          format: int64
         refresh_token:
           type: string
         token_type:
@@ -205,6 +255,7 @@ components:
         refresh_token: refresh_token
         expires: 0
         token_type: token_type
+        expires_in: 6
     ApiErrorDetail:
       type: object
       properties:
